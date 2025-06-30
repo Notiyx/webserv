@@ -1,11 +1,20 @@
 NAME = webserv
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -I./headers -std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 \
+           -I./headers \
+           -I./headers/Exception 
 
 OBJDIR = object
 
-SRCS = srcs/main.cpp 
+SRCS = ./srcs/main.cpp \
+	   ./srcs/Webserv/Webserv.cpp 
+
+CONFIG = ./srcs/Config/Config.cpp
+
+EXCEPTION = ./srcs/Exception/ConfigFile.cpp
+
+SRCS += $(CONFIG) $(EXCEPTION)
 
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
 
