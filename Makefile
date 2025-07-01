@@ -1,9 +1,10 @@
 NAME = webserv
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 \
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP \
            -I./headers \
-           -I./headers/Exception 
+           -I./headers/Exception  \
+		   -I./headers/Config \
 
 OBJDIR = object
 
@@ -17,6 +18,8 @@ EXCEPTION = ./srcs/Exception/ConfigFile.cpp
 SRCS += $(CONFIG) $(EXCEPTION)
 
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
+
+DEPS = $(OBJS:.o=.d)
 
 all: banner $(NAME)
 
@@ -43,5 +46,7 @@ fclean: clean
 	@echo "\033[1;31m🗑️ Removed binary $(NAME).\033[0m"
 
 re: fclean all
+
+-include $(DEPS)
 
 .PHONY: all clean fclean re banner

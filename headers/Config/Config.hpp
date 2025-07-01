@@ -6,13 +6,14 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/06/30 08:23:56 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 02:08:16 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <map>
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include <sstream>
