@@ -19,6 +19,12 @@ class IS_Listen : public I_Listen
 {
     private:
     public:
+        void    setListenHostAndPort(const std::string &str);
+        void    setListenHostname(const std::string &str);
+        void    setListenPort(const int &por);
+        std::string getListenHostAndPort();
+        std::string getListenHostname();
+        int         getListenPort();
         IS_Listen();
         ~IS_Listen();
 };

@@ -6,25 +6,37 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 06:01:51 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 08:19:46 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Config.hpp>
+#include <NameSpace.hpp>
 
 Config::Config() {
 }
 
 void    Config::parseConfig(const char *av) {
-    std::ifstream infile(av);
+    std::string   strFile(av);
+    std::string   extensionFile(".conf");
     std::string   valueRead;
-    if (!infile.is_open())
-        throw ConfigFileError("Error: error during open file");
-    while (std::getline(infile, valueRead)) {
-        std::cout << valueRead << std::endl;
-    } 
-}
 
+    if (!utils::checkEndStr(strFile, extensionFile))
+        throw (ConfigFileError("Error: Invalid extension in file name !"));
+    std::ifstream infile(av);
+    if (!infile.is_open())
+        throw (ConfigFileError("Error: error during open file"));
+    if (!configUtils::checkIsPairChar(infile))
+    {
+        infile.close();
+        throw (ConfigFileError("Error: Missing brace in the configuration file"));
+    }
+    try {
+        this->location = configUtils::findLocation(infile);
+    } catch(const ConfigFileError& e) {
+        throw (ConfigFileError(e));
+    }
+}
 Config  &Config::operator=(const Config &conf) {
     if (this != &conf)
     {
