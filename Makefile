@@ -11,6 +11,7 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP \
 OBJDIR = object
 
 SRCS = ./srcs/main.cpp \
+	   ./srcs/Utils.cpp \
 	   ./srcs/Webserv/Webserv.cpp 
 
 CONFIG = ./srcs/Config/Config.cpp
