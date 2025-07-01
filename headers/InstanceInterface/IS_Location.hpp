@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   IS_Location.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/30 07:36:56 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/06/30 08:10:00 by tlonghin         ###   ########.fr       */
+/*   Created: 2025/07/01 04:53:14 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/01 05:31:36 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Webserv.hpp>
+#pragma once
 
-int main(int ac, char **av) {
-    if (ac != 2)
-    {
-        std::cerr << "Error: synthax : ./webserv <*.conf>" << std::endl;
-        return (1);
-    }
-    Webserv webserv;
-    Config  conf;
-    try
-    {
-        conf.parseConfig(av[1]);
-    }
-    catch(const ConfigFileError &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-    webserv.setConfig(conf);
-}
+#include <iostream>
+#include <vector>
+#include <Interface.hpp>
+
+class I_Location;
+
+class IS_Location : public I_Location
+{
+    private:
+    public:
+        IS_Location();
+        ~IS_Location();
+};

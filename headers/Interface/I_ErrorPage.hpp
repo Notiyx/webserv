@@ -1,32 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   I_ErrorPage.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/30 07:36:56 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/06/30 08:10:00 by tlonghin         ###   ########.fr       */
+/*   Created: 2025/07/01 05:44:15 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/01 05:52:52 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Webserv.hpp>
+#pragma once
 
-int main(int ac, char **av) {
-    if (ac != 2)
-    {
-        std::cerr << "Error: synthax : ./webserv <*.conf>" << std::endl;
-        return (1);
-    }
-    Webserv webserv;
-    Config  conf;
-    try
-    {
-        conf.parseConfig(av[1]);
-    }
-    catch(const ConfigFileError &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-    webserv.setConfig(conf);
-}
+#include <iostream>
+
+class I_ErrorPage
+{
+    protected:
+        int    errorCode;
+        std::string path;
+    public:
+        virtual ~I_ErrorPage() = 0;
+};
