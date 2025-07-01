@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 09:37:49 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 09:38:48 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,9 @@ static IS_Location  findDataLoc(std::istream &infile) {
     IS_Location isloc;
     std::string valueRead;
     bool    Data[5] = {false, false, false, false, false};
+    (void) infile;
+    (void) Data;
+    return (isloc);
 }
 
 std::map<std::string, IS_Location> configUtils::findLocation(std::istream &infile) {
