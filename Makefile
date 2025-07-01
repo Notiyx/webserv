@@ -5,6 +5,8 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP \
            -I./headers \
            -I./headers/Exception  \
 		   -I./headers/Config \
+		   -I./headers/InstanceInterface \
+		   -I./headers/Interface \
 
 OBJDIR = object
 
@@ -15,7 +17,9 @@ CONFIG = ./srcs/Config/Config.cpp
 
 EXCEPTION = ./srcs/Exception/ConfigFile.cpp
 
-SRCS += $(CONFIG) $(EXCEPTION)
+IS = ./srcs/IS/InstanceInterface.cpp
+
+SRCS += $(CONFIG) $(EXCEPTION) $(IS)
 
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
 

@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 02:07:01 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 05:49:31 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,14 @@ void    Config::parseConfig(const char *av) {
 
 Config  &Config::operator=(const Config &conf) {
     if (this != &conf)
-        this->data.insert(conf.data.begin(), conf.data.end());
+    {
+        this->serverName = conf.serverName;
+        this->clientMaxRequest = conf.clientMaxRequest;
+        this->errorPage.insert(conf.errorPage.begin(), conf.errorPage.end());
+        this->host = conf.host;
+        this->listen = conf.listen;
+        this->location.insert(conf.location.begin(), conf.location.end());
+    }
     return (*this);
 }
 
