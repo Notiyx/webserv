@@ -6,18 +6,20 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 08:55:05 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 09:22:15 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <InstanceInterface.hpp>
 
 std::string    IS_Location::getRoot() {
-    return (this->root)
+    return (this->root);
 }
+
 std::string    IS_Location::getIndex() {
-    return (this->index)
+    return (this->index);
 }
+
 bool    IS_Location::getAutoIndex() {
     return (this->autoIndex);
 }
