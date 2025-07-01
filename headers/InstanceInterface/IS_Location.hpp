@@ -22,6 +22,15 @@ class IS_Location : public I_Location
 {
     private:
     public:
+        void    setRoot(const std::string &root);
+        void    setIndex(const std::string &index);
+        void    setAutoIndex(const bool &value);
+        void    setuploadEnable(const bool &value);
+        void    setMethodAllow(const char *types, const bool &value);
+        std::string getRoot();
+        std::string getIndex();
+        bool        getAutoIndex();
+        bool        getuploadEnable();
         IS_Location();
         ~IS_Location();
 };

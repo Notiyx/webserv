@@ -19,6 +19,12 @@ class IS_Host : public I_Host
 {
     private:
     public:
+        void    setHostAndPort(const std::string &str);
+        void    setHostname(const std::string &str);
+        void    setPort(const int &por);
+        std::string getHostAndPort();
+        std::string getHostname();
+        int         getPort();
         IS_Host();
         ~IS_Host();
 };

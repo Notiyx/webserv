@@ -6,12 +6,12 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 06:46:57 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 08:19:46 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Config.hpp>
-#include <Utils.hpp>
+#include <NameSpace.hpp>
 
 Config::Config() {
 }
@@ -19,18 +19,23 @@ Config::Config() {
 void    Config::parseConfig(const char *av) {
     std::string   strFile(av);
     std::string   extensionFile(".conf");
+    std::string   valueRead;
 
     if (!utils::checkEndStr(strFile, extensionFile))
-        throw ConfigFileError("Error: Invalid extension in file name !");
-
+        throw (ConfigFileError("Error: Invalid extension in file name !"));
     std::ifstream infile(av);
-    std::string   valueRead;
     if (!infile.is_open())
         throw (ConfigFileError("Error: error during open file"));
-    if (infile)
-    while (std::getline(infile, valueRead)) {
-        std::cout << valueRead << std::endl;
-    } 
+    if (!configUtils::checkIsPairChar(infile))
+    {
+        infile.close();
+        throw (ConfigFileError("Error: Missing brace in the configuration file"));
+    }
+    try {
+        this->location = configUtils::findLocation(infile);
+    } catch(const ConfigFileError& e) {
+        throw (ConfigFileError(e));
+    }
 }
 Config  &Config::operator=(const Config &conf) {
     if (this != &conf)

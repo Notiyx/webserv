@@ -21,6 +21,12 @@ class IS_MethodsAllow : public I_MethodsAllow
     private:
     
     public:
+        void    setGetMethod(const bool &value);
+        void    setPostMethod(const bool &value);
+        void    setDeleteMethod(const bool &value);
+        bool    getGetMethod();
+        bool    getPostMethod();
+        bool    getDeleteMethod();
         IS_MethodsAllow();
         ~IS_MethodsAllow();
 };
