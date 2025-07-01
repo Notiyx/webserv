@@ -6,13 +6,14 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 05:49:31 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/01 06:01:51 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Config.hpp>
 
-Config::Config() {}
+Config::Config() {
+}
 
 void    Config::parseConfig(const char *av) {
     std::ifstream infile(av);

@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Interface.hpp                                      :+:      :+:    :+:   */
+/*   I_Listen.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/01 05:22:20 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 06:06:06 by tlonghin         ###   ########.fr       */
+/*   Created: 2025/07/01 06:03:55 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/01 06:08:48 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <I_Location.hpp>
-#include <I_MethodsAllow.hpp>
-#include <I_ErrorPage.hpp>
-#include <I_Listen.hpp>
-#include <I_Host.hpp>
+#include <iostream>
 
-class I_Location;
-class I_MethodsAllow;
-class I_ErrorPage;
-class I_Listen;
-class I_Host;
+class I_Listen
+{
+    protected:
+        std::string hostAndPort;
+        std::string hostName;
+        int port;
+    public:
+        virtual ~I_Listen() = 0;
+};
