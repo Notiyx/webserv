@@ -1,35 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   UtilsConfig.cpp                                    :+:      :+:    :+:   */
+/*   ParseConfigLocation.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 06:35:59 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 06:41:26 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 10:43:54 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <NameSpace.hpp>
 #include <AllException.hpp>
-
-bool    configUtils::checkIsPairChar(std::istream &infile) {
-    std::string valueRead;
-    int         count = 0;
-
-    while (std::getline(infile, valueRead)) {
-        for (std::string::size_type i = 0; i < valueRead.size(); ++i) {
-            if (valueRead[i] == '{' || valueRead[i] == '}') {
-                ++count;
-            }
-        }
-    }
-    infile.clear();
-    infile.seekg(0, std::ios::beg);
-    if (count % 2 != 0)
-        return (false);
-    return (true);
-}
 
 static std::string  keepToNextIsSpace(const char *str) {
     std::size_t i = 0;
@@ -169,7 +151,6 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
     isloc.setMethodAllow("DELETE", false);
     while (std::getline(infile,valueRead)) {
         line++;
-        std::cout << valueRead << std::endl;
         if (valueRead.find("root") != std::string::npos) {
             try {
                 if (Data[0])
@@ -265,5 +246,7 @@ std::map<std::string, IS_Location> parsingFunction::findLocation(std::istream &i
     }
     if (loc.size() == 0)
         throw (ConfigFileError("Error: No location found !"));
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
     return (loc);
 }

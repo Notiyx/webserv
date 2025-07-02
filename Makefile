@@ -15,7 +15,8 @@ SRCS = ./srcs/main.cpp \
 	   ./srcs/Webserv/Webserv.cpp 
 
 CONFIG = ./srcs/Config/Config.cpp \
-		 ./srcs/Config/Parse/UtilsConfig.cpp \
+		 ./srcs/Config/Parse/ParseConfigLocation.cpp \
+		 ./srcs/Config/Parse/ParseConfigListenHost.cpp 
 
 EXCEPTION = ./srcs/Exception/ConfigFile.cpp
 
