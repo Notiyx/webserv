@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 21:22:16 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:41:42 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,10 @@ namespace utils
 namespace configUtils
 {
     bool    checkIsPairChar(std::istream &infile); //va lire le fichier et renvoyer si y'a bien un nombre pair d'accolade
-    std::map<std::string, IS_Location> findLocation(std::istream &infile);
+    std::string keepToNextIsSpace(const char *str);
 } // namespace config_utils
+
+namespace parsingFunction
+{
+    std::map<std::string, IS_Location> findLocation(std::istream &infile);
+} // namespace name

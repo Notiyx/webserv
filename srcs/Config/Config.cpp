@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 06:18:42 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:43:43 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,17 @@ void    Config::parseConfig(const char *av) {
         throw (ConfigFileError("Error: Missing brace in the configuration file"));
     }
     try {
-        this->location = configUtils::findLocation(infile);
+        this->location = parsingFunction::findLocation(infile);
         std::cout << "---------------------------" << std::endl;
         for(std::map<std::string, IS_Location>::iterator it = this->location.begin(); it != this->location.end(); ++it) {
-            std::cout << it->second.getRoot() << std::endl;
-            std::cout << it->second.getIndex() << std::endl;
-            std::cout << it->second.getDirectoryListing() << std::endl;
-            std::cout << it->second.getUploadPath() << std::endl;
-            std::cout << it->second.getUploadEnable() << std::endl;
-            std::cout << it->second.getLocationGetMethod() << std::endl;
-            std::cout << it->second.getLocationPostMethod() << std::endl;
-            std::cout << it->second.getLocationDeleteMethod() << std::endl;
+            std::cout << it->second.getRoot() << " --> Root " << std::endl;
+            std::cout << it->second.getIndex() << " --> Index " << std::endl;
+            std::cout << it->second.getDirectoryListing() << " --> Directory listing active " << std::endl;
+            std::cout << it->second.getUploadPath() << " --> Upload Path " << std::endl;
+            std::cout << it->second.getUploadEnable() << " --> Upload Enable " << std::endl;
+            std::cout << it->second.getLocationGetMethod() << " --> Get MEthod " << std::endl;
+            std::cout << it->second.getLocationPostMethod() << " --> Post Method " << std::endl;
+            std::cout << it->second.getLocationDeleteMethod() << " --> Delete Method " << std::endl;
             std::cout << "-----------------------------" << std::endl;
         }
     } catch(const ConfigFileError& e) {
