@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 06:25:40 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:31:33 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,7 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
     IS_Location isloc;
     std::string valueRead;
     std::ostringstream ost;
+    bool               Data[6] = {false, false, false, false, false, false};
     isloc.setUploadEnable(false);
     isloc.setDirectoryListing(false);
     isloc.setMethodAllow("GET", false);
@@ -189,31 +190,49 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
         std::cout << valueRead << std::endl;
         if (valueRead.find("root") != std::string::npos) {
             try {
+                if (Data[0])
+                    throw (ConfigFileError("Error Location: multiple definition of root !"));
+                Data[0] = true;
                 valueRead = getPathLoc(valueRead, "Root", 4, line);
                 isloc.setRoot(valueRead);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("index") != std::string::npos) {
             try {
+                if (Data[1])
+                    throw (ConfigFileError("Error Location: multiple definition of index !"));
+                Data[1] = true;
                 valueRead = getPathLoc(valueRead, "Index", 5, line);
                 isloc.setIndex(valueRead);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("directoryListing") != std::string::npos) {
             try {
+                if (Data[2])
+                    throw (ConfigFileError("Error Location: multiple definition of directoryListing !"));
+                Data[2] = true;
                 bool values = getBoolLoc(valueRead, "Directory Listing", 16, line);
                 isloc.setDirectoryListing(values);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("upload_path") != std::string::npos) {
             try {
+                if (Data[3])
+                    throw (ConfigFileError("Error Location: multiple definition of upload_path !"));
+                Data[3] = true;
                 valueRead = getPathLoc(valueRead, "Upload Path", 11, line);
                 isloc.setUploadPath(valueRead);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("upload_enabled") != std::string::npos) {
             try {
+                if (Data[4])
+                    throw (ConfigFileError("Error Location: multiple definition of upload_enabled !"));
+                Data[4] = true;
                 bool values = getBoolLoc(valueRead, "Upload Enabled", 14, line);
                 isloc.setUploadEnable(values);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("allow_methods") != std::string::npos) {
              try {
+                if (Data[5])
+                    throw (ConfigFileError("Error Location: multiple definition of allow_methods !"));
+                Data[5] = true;
                 isloc = setAllowedMethods(valueRead, isloc, line);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("}") != std::string::npos) {
@@ -221,6 +240,11 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
         } else {
             throw (ConfigFileError("Error Location : keywords not founds"));
         }
+    }
+    if (!Data[5]) {
+        isloc.setMethodAllow("GET", true);
+        isloc.setMethodAllow("POST", true);
+        isloc.setMethodAllow("DELETE", true);
     }
     return (isloc);
 }
