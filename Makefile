@@ -14,11 +14,15 @@ SRCS = ./srcs/main.cpp \
 	   ./srcs/Utils.cpp \
 	   ./srcs/Webserv/Webserv.cpp 
 
-CONFIG = ./srcs/Config/Config.cpp
+CONFIG = ./srcs/Config/Config.cpp \
+		 ./srcs/Config/Parse/ParseConfigLocation.cpp \
+		 ./srcs/Config/Parse/ParseConfigListenHost.cpp 
 
 EXCEPTION = ./srcs/Exception/ConfigFile.cpp
 
-IS = ./srcs/IS/InstanceInterface.cpp
+IS = ./srcs/IS/InstanceInterface.cpp \
+	 ./srcs/IS/Getter.cpp \
+	 ./srcs/IS/Setter.cpp
 
 SRCS += $(CONFIG) $(EXCEPTION) $(IS)
 

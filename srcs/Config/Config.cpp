@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 08:19:46 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 10:51:57 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,50 @@ void    Config::parseConfig(const char *av) {
         throw (ConfigFileError("Error: Missing brace in the configuration file"));
     }
     try {
-        this->location = configUtils::findLocation(infile);
+        this->listen = parsingFunction::findListen(infile);
+        this->host = parsingFunction::findHost(infile);
+        this->serverName = parsingFunction::findServerName(infile);
+        this->clientMaxRequest = parsingFunction::findMaxClientRequest(infile);
+        this->errorPage = parsingFunction::findErrorPage(infile);
+        this->location = parsingFunction::findLocation(infile);
+        this->printConfig(strFile);
     } catch(const ConfigFileError& e) {
         throw (ConfigFileError(e));
     }
 }
+
+void    Config::printConfig(const std::string strFile) {
+    std::cout << "=======================" << strFile << "=======================" << std::endl;
+        std::cout << this->serverName << " --> serverName" << std::endl;
+        std::cout << this->clientMaxRequest << " --> Max client request size" << std::endl;
+        std::cout << "-----------------------LISTEN DATA-----------------------" << std::endl;
+        std::cout << this->listen.getListenHostAndPort() << " --> HostNameAndPort" << std::endl;
+        std::cout << this->listen.getListenPort() << " --> Port" << std::endl;
+        std::cout << this->listen.getListenHostname() << " --> HostName" << std::endl;
+        std::cout << "-----------------------HOST DATA-----------------------" << std::endl;
+        std::cout << this->host.getHostAndPort() << " --> HostNameAndPort" << std::endl;
+        std::cout << this->host.getPort() << " --> Port" << std::endl;
+        std::cout << this->host.getHostname() << " --> HostName" << std::endl;
+        for(std::map<std::string, IS_Location>::iterator it = this->location.begin(); it != this->location.end(); ++it) {
+            std::cout << "------------ Location : " << it->first << "------------" << std::endl;
+            std::cout << it->second.getRoot() << " --> Root " << std::endl;
+            std::cout << it->second.getIndex() << " --> Index " << std::endl;
+            std::cout << it->second.getDirectoryListing() << " --> Directory listing active " << std::endl;
+            std::cout << it->second.getUploadPath() << " --> Upload Path " << std::endl;
+            std::cout << it->second.getUploadEnable() << " --> Upload Enable " << std::endl;
+            std::cout << it->second.getLocationGetMethod() << " --> GET Method " << std::endl;
+            std::cout << it->second.getLocationPostMethod() << " --> POST Method " << std::endl;
+            std::cout << it->second.getLocationDeleteMethod() << " --> DELETE Method " << std::endl;
+        }
+        std::cout << "-----------------------ERROR PAGE-----------------------" << std::endl;
+        for (std::map<std::string, IS_ErrorPage>::iterator it = this->errorPage.begin(); it != this->errorPage.end(); ++it) {
+            std::cout << it->first << " --> Error code(String)" << std::endl;
+            std::cout << it->second.getErrorCode() << " --> Error code (int)" << std::endl;
+            std::cout << it->second.getErrorPath() << " --> Error path" << std::endl;
+        }
+        std::cout << "=====================================================================" << std::endl;
+}
+
 Config  &Config::operator=(const Config &conf) {
     if (this != &conf)
     {

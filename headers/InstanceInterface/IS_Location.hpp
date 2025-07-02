@@ -24,13 +24,18 @@ class IS_Location : public I_Location
     public:
         void    setRoot(const std::string &root);
         void    setIndex(const std::string &index);
-        void    setAutoIndex(const bool &value);
-        void    setuploadEnable(const bool &value);
+        void    setDirectoryListing(const bool &value);
+        void    setUploadPath(const std::string &path);
+        void    setUploadEnable(const bool &value);
         void    setMethodAllow(const char *types, const bool &value);
         std::string getRoot();
         std::string getIndex();
-        bool        getAutoIndex();
-        bool        getuploadEnable();
+        std::string getUploadPath();
+        bool        getDirectoryListing();
+        bool        getUploadEnable();
+        bool    getLocationGetMethod();
+        bool    getLocationPostMethod();
+        bool    getLocationDeleteMethod();
         IS_Location();
         ~IS_Location();
 };
