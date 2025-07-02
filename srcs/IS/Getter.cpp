@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 09:22:15 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:15:29 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,25 @@ std::string    IS_Location::getIndex() {
     return (this->index);
 }
 
-bool    IS_Location::getAutoIndex() {
-    return (this->autoIndex);
+std::string     IS_Location::getUploadPath() {
+    return (this->uploadPath);
 }
-bool    IS_Location::getuploadEnable() {
+
+bool    IS_Location::getDirectoryListing() {
+    return (this->directoryListing);
+}
+bool    IS_Location::getUploadEnable() {
     return (this->uploadEnable);
+}
+
+bool    IS_Location::getLocationGetMethod() {
+    return (this->methodsAllow.getGetMethod());
+}
+bool    IS_Location::getLocationPostMethod() {
+    return (this->methodsAllow.getPostMethod());
+}
+bool    IS_Location::getLocationDeleteMethod() {
+    return (this->methodsAllow.getDeleteMethod());
 }
 
 bool    IS_MethodsAllow::getGetMethod() {

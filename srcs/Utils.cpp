@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 09:38:48 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:25:40 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,170 @@ static std::string  keepToNextIsSpace(const char *str) {
     return (nstr);
 }
 
+static  std::string getPathLoc(std::string valueRead, const char *keywords, const int sizeKeywords, const int line) {
+    std::ostringstream oss;
+    valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+    if (!isspace(valueRead[sizeKeywords]))
+    {
+        oss << "Error Location: " << keywords << " attributs in location error no found space after keywords at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(sizeKeywords + 1);
+    if (valueRead == ";" || valueRead.size() == 0)
+    {
+        oss << "Error Location: " << keywords << " attributs error data not set at line" << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") == std::string::npos) {
+        oss << "Error Location: " << keywords << " attributs no find ';' in end of line at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") != valueRead.size() - 1) {
+            oss << "Error Location: " << keywords << " attributs ; pas bien placer a la ligne " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(0, valueRead.size() - 1);
+    return (valueRead);
+}
+
+static  bool    getBoolLoc(std::string valueRead, const char *keywords, const int sizeKeywords, const int line) {
+    std::ostringstream oss;
+    valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+    if (!isspace(valueRead[sizeKeywords]))
+    {
+        oss << "Error Location: " << keywords << " attribut error no found space after keywords at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(sizeKeywords + 1);
+    if (valueRead == ";" || valueRead.size() == 0)
+    {
+        oss << "Error Location: " << keywords << " attributs error data not set at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") == std::string::npos) {
+        oss << "Error Location: " << keywords << " attributs no find ';' in end of line at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") != valueRead.size() - 1)
+    {
+        oss << "Error Location: " << keywords << " attributs ; pas bien placer at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(0, valueRead.size() - 1);
+    oss << "Error Location: " << keywords << " Enabled attributes error: the keyword is neither 'on' or 'off' but is '" << valueRead << "' at line " << line << " !";
+    if (valueRead != "off" && valueRead != "on")
+    {
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    bool values;
+    if (valueRead == "off")
+        values = false;
+    if (valueRead == "on")
+        values = true;
+    return (values);
+}
+
+static  IS_Location setAllowedMethods(std::string valueRead, IS_Location &is, const int line) {
+    std::ostringstream oss;
+    valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+    if (!isspace(valueRead[13]))
+    {
+        oss << "Error Location: Allow Methods attributs no found space after keywords ! at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(14);
+    if (valueRead == ";" || valueRead.size() == 0) {
+        oss << "Error Location: Allow Methods attributs data not set at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") == std::string::npos) {
+        oss << "Error Location: Allow Methods attribut no find ';' in end of line at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    if (valueRead.find(";") != valueRead.size() - 1) {
+        oss << "Error Location: Allow Methods attribut ';' pas bien placer at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    valueRead = valueRead.substr(0, valueRead.size() - 1);
+    std::istringstream iss(valueRead);
+    std::string        words;
+    while (iss >> words) {
+        if (words != "GET" && words != "POST" && words != "DELETE")
+        {
+            oss << "Error Location: Allow Methods attribut '" << words << "' is not valid arguments for allow_methods(GET,POST,DELETE) at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+        is.setMethodAllow(words.c_str(), true);
+    }
+    return (is);
+}
+
 /// SI pas de root definis on va considerer qu'on prend le root du server donc qu'elle est heriter
 /// pareil pour l'auto index mais si y'a pas de auto index alors on va dire qu'elle est sur off par defaut
 /// si il n'y as pas de methods autoriser definis on considere qu'on les acceptes toutes donc qu'elles sont toutes passes a true
 /// si pas de upload_enable alors il est en false
 /// si pas d'index alors on dit qu'il herite de l'index server ou de un par defaut (peu probable)
-static IS_Location  findDataLoc(std::istream &infile) {
+static IS_Location  findDataLoc(std::istream &infile, int line) {
     IS_Location isloc;
     std::string valueRead;
-    bool    Data[5] = {false, false, false, false, false};
-    (void) infile;
-    (void) Data;
+    std::ostringstream ost;
+    isloc.setUploadEnable(false);
+    isloc.setDirectoryListing(false);
+    isloc.setMethodAllow("GET", false);
+    isloc.setMethodAllow("POST", false);
+    isloc.setMethodAllow("DELETE", false);
+    while (std::getline(infile,valueRead)) {
+        line++;
+        std::cout << valueRead << std::endl;
+        if (valueRead.find("root") != std::string::npos) {
+            try {
+                valueRead = getPathLoc(valueRead, "Root", 4, line);
+                isloc.setRoot(valueRead);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("index") != std::string::npos) {
+            try {
+                valueRead = getPathLoc(valueRead, "Index", 5, line);
+                isloc.setIndex(valueRead);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("directoryListing") != std::string::npos) {
+            try {
+                bool values = getBoolLoc(valueRead, "Directory Listing", 16, line);
+                isloc.setDirectoryListing(values);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("upload_path") != std::string::npos) {
+            try {
+                valueRead = getPathLoc(valueRead, "Upload Path", 11, line);
+                isloc.setUploadPath(valueRead);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("upload_enabled") != std::string::npos) {
+            try {
+                bool values = getBoolLoc(valueRead, "Upload Enabled", 14, line);
+                isloc.setUploadEnable(values);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("allow_methods") != std::string::npos) {
+             try {
+                isloc = setAllowedMethods(valueRead, isloc, line);
+            } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
+        } else if (valueRead.find("}") != std::string::npos) {
+            break ;
+        } else {
+            throw (ConfigFileError("Error Location : keywords not founds"));
+        }
+    }
     return (isloc);
 }
 
@@ -94,8 +247,12 @@ std::map<std::string, IS_Location> configUtils::findLocation(std::istream &infil
         }
         valueRead = valueRead.substr(1);
         path = keepToNextIsSpace(valueRead.c_str());
-        std::cout << path << std::endl;
-        defaultLoc = findDataLoc(infile);
+        try {
+            defaultLoc = findDataLoc(infile, lines);   
+        } catch (const ConfigFileError &e) {
+            throw (ConfigFileError(e));
+        }
+        loc[path] = defaultLoc;
     }
     if (loc.size() == 0)
         throw (ConfigFileError("Error: No location found !"));

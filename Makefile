@@ -18,7 +18,9 @@ CONFIG = ./srcs/Config/Config.cpp
 
 EXCEPTION = ./srcs/Exception/ConfigFile.cpp
 
-IS = ./srcs/IS/InstanceInterface.cpp
+IS = ./srcs/IS/InstanceInterface.cpp \
+	 ./srcs/IS/Getter.cpp \
+	 ./srcs/IS/Setter.cpp
 
 SRCS += $(CONFIG) $(EXCEPTION) $(IS)
 

@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 08:49:23 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/02 03:09:38 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,26 @@ void    IS_Location::setRoot(const std::string &root) {
 void    IS_Location::setIndex(const std::string &index) {
     this->index = index;
 }
-void    IS_Location::setAutoIndex(const bool &value) {
-    this->autoIndex = value;
+
+void    IS_Location::setUploadPath(const std::string &path) {
+    this->uploadPath = path;
 }
-void    IS_Location::setuploadEnable(const bool &value) {
+
+void    IS_Location::setUploadEnable(const bool &value) {
     this->uploadEnable = value;
+}
+
+void    IS_Location::setDirectoryListing(const bool &value) {
+    this->directoryListing = value;
 }
 
 void    IS_Location::setMethodAllow(const char *types, const bool &value) {
     std::string compare(types);
-    if (types == "GET")
+    if (compare == "GET")
         this->methodsAllow.setGetMethod(value);
-    if (types == "POST")
+    if (compare == "POST")
         this->methodsAllow.setPostMethod(value);
-    if (types == "DELETE")
+    if (compare == "DELETE")
         this->methodsAllow.setDeleteMethod(value);
 }
 
