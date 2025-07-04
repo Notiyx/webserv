@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 08:51:24 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/04 19:20:33 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ namespace utils
     bool        checkEndStr(const std::string str, const std::string suffix);
     std::string removeIsSpaceBetween(const char *str);
     bool        isOnlyDigit(const char *str);
+    void        check_syscall(int ret, const char* syscall_name);
 } // namespace utils
 
 namespace configUtils
