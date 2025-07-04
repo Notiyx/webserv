@@ -18,7 +18,8 @@ CONFIG = ./srcs/Config/Config.cpp \
 		 ./srcs/Config/Parse/ParseConfigLocation.cpp \
 		 ./srcs/Config/Parse/ParseConfigListenHost.cpp 
 
-EXCEPTION = ./srcs/Exception/ConfigFile.cpp
+EXCEPTION = ./srcs/Exception/ConfigFileError.cpp \
+			./srcs/Exception/SetupServError.cpp
 
 IS = ./srcs/IS/InstanceInterface.cpp \
 	 ./srcs/IS/Getter.cpp \

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 10:51:57 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/04 06:28:00 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void    Config::parseConfig(const char *av) {
         this->clientMaxRequest = parsingFunction::findMaxClientRequest(infile);
         this->errorPage = parsingFunction::findErrorPage(infile);
         this->location = parsingFunction::findLocation(infile);
-        this->printConfig(strFile);
+        //this->printConfig(strFile);
     } catch(const ConfigFileError& e) {
         throw (ConfigFileError(e));
     }
@@ -88,5 +88,14 @@ Config  &Config::operator=(const Config &conf) {
     }
     return (*this);
 }
+
+int     Config::getPort(){
+    return (host.getPort());
+};
+
+std::string     Config::getServName(){
+    return (serverName);
+};
+
 
 Config::~Config() {}

@@ -1,37 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   SetupServError.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/30 07:35:47 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 06:16:25 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/04 05:33:15 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/04 05:54:16 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <iostream>
-#include <Config.hpp>
-#include <AllException.hpp>
-#include <sys/socket.h>
-#include <cstring>
-#include <string>
-#include <netinet/in.h>
-#include <fcntl.h>
 
-class Config;
-class Exception;
-
-class Webserv {
+class SetupServError : public std::exception {
     private :
-        int     serv_fd;
-        Config  conf;
+        std::string msg;
     public :
-    Webserv();
-    void    setupServ();
-    void    setConfig(const Config newConf);
-    void    launchServ();
-    ~Webserv();
+		SetupServError(const std::string& msg);
+        const char* what() const throw();
+        ~SetupServError() throw();
 };

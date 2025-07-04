@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 10:49:43 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/04 06:21:14 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,10 @@ class Config {
         std::map<std::string, IS_Location> location;
     public:
         Config();
-        Config  &operator=(const Config &conf);
-        void    parseConfig(const char *av);
-        void    printConfig(const std::string strFile);
+        Config          &operator=(const Config &conf);
+        void            parseConfig(const char *av);
+        void            printConfig(const std::string strFile);
+        int             getPort();
+        std::string     getServName();
         ~Config();
 };
