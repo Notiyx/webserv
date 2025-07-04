@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:20:33 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 20:18:51 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,13 @@ namespace utils
     std::string removeIsSpaceBetween(const char *str);
     bool        isOnlyDigit(const char *str);
     void        check_syscall(int ret, const char* syscall_name);
+    bool        isOnlySpace(const char *str);
 } // namespace utils
 
 namespace configUtils
 {
     bool    checkIsPairChar(std::istream &infile); //va lire le fichier et renvoyer si y'a bien un nombre pair d'accolade
+    void    checkValidString(std::istream &infile);
 } // namespace config_utils
 
 namespace parsingFunction
