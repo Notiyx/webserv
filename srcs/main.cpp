@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:36:56 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 06:23:12 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 19:24:49 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,16 @@ int main(int ac, char **av) {
     }
     catch(const ConfigFileError &e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << std::endl;
+        return (1);
     }
     webserv.setConfig(conf);
-    webserv.setupServ();
-    webserv.launchServ();
+    try {
+        webserv.setupServ();
+        webserv.launchServ();
+    }
+    catch (const fdError &e){
+        std::cerr <<e.what() << std::endl;
+        return (1);
+    }
 }

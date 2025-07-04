@@ -1,24 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SetupServError.hpp                                 :+:      :+:    :+:   */
+/*   fdError.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/04 05:33:15 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/04 05:54:16 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/04 05:36:55 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/04 19:23:36 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
+#include <fdError.hpp>
 #include <iostream>
 
-class SetupServError : public std::exception {
-    private :
-        std::string msg;
-    public :
-		SetupServError(const std::string& msg);
-        const char* what() const throw();
-        ~SetupServError() throw();
-};
+
+fdError::fdError(const std::string& msg) : msg(msg) {};
+
+const char* fdError::what() const throw() {
+    return msg.c_str();
+}
+
+fdError::~fdError() throw() {};
+

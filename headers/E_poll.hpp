@@ -1,41 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   E_poll.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/30 07:35:47 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:21:47 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/04 16:25:11 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/04 19:08:40 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
 #include <iostream>
-#include <Config.hpp>
 #include <AllException.hpp>
-#include <NameSpace.hpp>
-#include <sys/socket.h>
-#include <cstring>
-#include <string>
+#include <sys/epoll.h>
 #include <netinet/in.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <streambuf>
+#include <vector>
 
-
-class Config;
-class Exception;
-
-class Webserv {
-    private :
-        int     serv_fd;
-        Config  conf;
-    public :
-    Webserv();
-    void    setupServ();
-    void    setConfig(const Config newConf);
-    void    launchServ();
-    ~Webserv();
+class E_poll {
+	private:
+		std::vector<int> clients;
+		int				 epoll_fd;
+	public:
+		E_poll();
+		~E_poll();
+		void epollInit(int serv_fd);
+		void epollLaunch(int max, int serv_fd);
 };

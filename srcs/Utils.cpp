@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 07:51:36 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/04 19:23:38 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <NameSpace.hpp>
 #include <AllException.hpp>
+#include <cstring>
+#include <errno.h>
 
 std::string utils::removeIsSpaceBetween(const char *str) {
     std::string nString;
@@ -56,3 +58,9 @@ bool    configUtils::checkIsPairChar(std::istream &infile) {
         return (false);
     return (true);
 }
+
+//Fonction qui protege et envois la bonne erreure si un fd fail;
+void    utils::check_syscall(int ret, const char* syscall_name) {
+    if (ret < 0)
+        throw fdError(std::string(syscall_name) + " failed: " + strerror(errno));
+};
