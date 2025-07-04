@@ -6,11 +6,13 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:48:10 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:22:21 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 20:32:44 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Webserv.hpp>
+#include <E_poll.hpp>
+
 
 Webserv::Webserv() {}
 
@@ -20,26 +22,11 @@ void    Webserv::setConfig(const Config newConf) {
 
 void Webserv::launchServ() {
     std::cout << "server: " << conf.getServName() << " launched. Port: " << conf.getPort() << std::endl;
+    E_poll poll;
+    poll.epollInit(serv_fd);
     while (true)
     {
-        //epoll class avec init ici
-        //code dans le while temporaire
-        struct sockaddr_in client_addr;
-        socklen_t addr_len = sizeof(client_addr);
-        int client_fd = accept(serv_fd, (struct sockaddr*)&client_addr, &addr_len);
-        utils::check_syscall(client_fd, "accept");
-        char buffer[70000];
-        size_t byte = read(client_fd, buffer, sizeof(buffer) - 1);
-        while (byte)
-        {
-            if (byte > 0)
-            {
-                buffer[byte] = '\0';
-                if (strncmp(buffer, "GET", 3) == 0)
-                    std::cout << buffer << std::endl;
-            }
-            byte = read(client_fd, buffer, sizeof(buffer) - 1);
-        }
+        poll.epollLaunch(serv_fd);
     }
 };
 

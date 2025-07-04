@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigListenHost.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 10:47:31 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/04 19:46:39 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ IS_Listen   parsingFunction::findListen(std::istream &infile) {
         }
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error Listen : no find ';' in end of line at line " << line << " !";
+            oss << "Error Listen : not found ';' in end of line at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
@@ -105,7 +105,7 @@ IS_Host   parsingFunction::findHost(std::istream &infile) {
         }
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error Host : no find ';' in end of line at line " << line << " !";
+            oss << "Error Host : not found ';' in end of line at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }

@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 06:21:14 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 20:19:02 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class Config {
         void            parseConfig(const char *av);
         void            printConfig(const std::string strFile);
         int             getPort();
+        std::size_t     getMaxClients();
         std::string     getServName();
         ~Config();
 };
