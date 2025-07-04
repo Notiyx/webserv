@@ -1,7 +1,7 @@
 NAME = webserv
 
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP \
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -MMD -MP -g3\
            -I./headers \
            -I./headers/Exception  \
 		   -I./headers/Config \
@@ -12,7 +12,9 @@ OBJDIR = object
 
 SRCS = ./srcs/main.cpp \
 	   ./srcs/Utils.cpp \
-	   ./srcs/Webserv/Webserv.cpp 
+	   ./srcs/Webserv/Webserv.cpp \
+	   ./srcs/Webserv/E_poll.cpp 
+
 
 CONFIG = ./srcs/Config/Config.cpp \
 		 ./srcs/Config/Parse/ParseConfigLocation.cpp \

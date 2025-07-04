@@ -6,14 +6,14 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/04 19:23:23 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 20:47:02 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <E_poll.hpp>
 #include <NameSpace.hpp>
 
-E_poll::E_poll() : clients() , epoll_fd(-1) {};
+E_poll::E_poll() : epoll_fd(-1) {};
 
 E_poll::~E_poll() {};
 
@@ -29,29 +29,34 @@ void E_poll::epollInit(int serv_fd) {
 		throw std::runtime_error("Error: epoll_ctl");
 };
 
-void E_poll::epollLaunch(int maxClients, int serv_fd) {
-	struct epoll_event events[maxClients];
+void E_poll::epollLaunch(int serv_fd) {
+	struct epoll_event events[1024];
 	//n = le nombre de clients qui ont besoin de trigger un event
-	int trigger = epoll_wait(epoll_fd, events, maxClients, -1);
+	int trigger = epoll_wait(epoll_fd, events, 1024, -1);
 	for (int i = 0; i < trigger; i++)
 	{
+		struct epoll_event event;
 		if (events[i].data.fd == serv_fd)
 		{
 			struct sockaddr_in client_addr;
        		socklen_t addr_len = sizeof(client_addr);
 			int client_fd = accept(serv_fd, (struct sockaddr*)&client_addr, &addr_len);
 			utils::check_syscall(client_fd, "accept");
-			struct epoll_event event;
 			event.events = EPOLLIN;
 			event.data.fd = client_fd;
 			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
 				throw std::runtime_error("Error: epoll_ctl");
-			clients.push_back(client_fd);
 		}
 		//je verifie si il y a EPPOLIN dans les flags d'events
-		if (events[i].events & EPOLLIN)
+		else if (events[i].events & EPOLLIN)
 		{
-			
+			event.events = EPOLLOUT;
+			epoll_ctl(epoll_fd, EPOLL_CTL_MOD, events[i].data.fd, &event);
+		}
+		else if (events[i].events & EPOLLOUT)
+		{
+			event.events = EPOLLIN;
+			epoll_ctl(epoll_fd, EPOLL_CTL_MOD, events[i].data.fd, &event);
 		}
 	}
 };
