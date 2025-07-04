@@ -182,7 +182,7 @@ std::string parsingFunction::findServerName(std::istream &infile) {
 std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
     std::size_t requestSize = 0;
     std::string multiplicator;
-    std::size_t multiplicatorN;
+    std::size_t multiplicatorN = 1;
     std::string valueRead;
     bool    alreadySet = false;
     std::ostringstream oss;

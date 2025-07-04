@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
 /*   Updated: 2025/07/04 20:25:00 by nmetais          ###   ########.fr       */
@@ -31,6 +31,15 @@ void    Config::parseConfig(const char *av) {
         infile.close();
         throw (ConfigFileError("Error: Missing brace in the configuration file"));
     }
+    try
+    {
+        configUtils::checkValidString(infile);
+    }
+    catch(const ConfigFileError& e)
+    {
+        throw (ConfigFileError(e));
+    }
+    
     try {
         this->listen = parsingFunction::findListen(infile);
         this->host = parsingFunction::findHost(infile);

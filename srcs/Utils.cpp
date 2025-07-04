@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:23:38 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 20:20:13 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,14 @@ bool    utils::isOnlyDigit(const char *str) {
     return (true);
 }
 
+bool    utils::isOnlySpace(const char *str) {
+    for (int i = 0; str[i]; ++i) {
+        if (!std::isspace(str[i]))
+            return (false);
+    }
+    return (true);
+}
+
 bool    configUtils::checkIsPairChar(std::istream &infile) {
     std::string valueRead;
     int         count = 0;
@@ -57,6 +65,33 @@ bool    configUtils::checkIsPairChar(std::istream &infile) {
     if (count % 2 != 0)
         return (false);
     return (true);
+}
+
+void    configUtils::checkValidString(std::istream &infile) {
+    std::string         valueRead;
+    std::ostringstream  oss;
+    int         line = 0;
+    while (std::getline(infile, valueRead)) {
+        line++;
+        if (line == 1 && valueRead.find("server {") != std::string::npos)
+            continue;
+        if (utils::isOnlySpace(valueRead.c_str()))
+            continue;
+        if (valueRead.find("location") != std::string::npos)
+            while (std::getline(infile, valueRead) && valueRead != "}") { line++; }
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+        if (valueRead.find("location") == std::string::npos && valueRead.find("listen") == std::string::npos &&
+            valueRead.find("host") == std::string::npos && valueRead.find("server_name") == std::string::npos &&
+            valueRead.find("client_max_body_size") == std::string::npos && valueRead.find("error_page") == std::string::npos
+            && valueRead != "}")
+        {
+            oss << "Error in default config : unknow keywords '" << valueRead << "' at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+    }
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
 }
 
 //Fonction qui protege et envois la bonne erreure si un fd fail;
