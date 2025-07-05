@@ -14,8 +14,9 @@ SRCS = ./srcs/main.cpp \
 	   ./srcs/Utils.cpp \
 	   ./srcs/Webserv/Webserv.cpp \
 	   ./srcs/Webserv/E_poll.cpp \
-	   	./srcs/Webserv/HTTPResponse.cpp \
-	   	./srcs/Webserv/Request.cpp \
+	   ./srcs/Webserv/HTTPResponse.cpp \
+	   ./srcs/Webserv/Request.cpp \
+	   ./srcs/DirectoryListing/DirectoryListing.cpp
 
 
 
@@ -25,6 +26,7 @@ CONFIG = ./srcs/Config/Config.cpp \
 
 EXCEPTION = ./srcs/Exception/ConfigFileError.cpp \
 			./srcs/Exception/fdError.cpp \
+			./srcs/Exception/DirectoryListError.cpp
 
 
 IS = ./srcs/IS/InstanceInterface.cpp \

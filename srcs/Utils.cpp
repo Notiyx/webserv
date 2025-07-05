@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 06:54:36 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 17:33:22 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,15 @@ std::string utils::removeIsSpaceBetween(const char *str) {
     while (str[i]) 
         nString += str[i++];
     return (nString);
+}
+
+std::string utils::getDateCurrent() {
+    char    buff[11];
+    std::time_t now = std::time(0);
+    std::tm *local_time = std::localtime(&now);
+    std::strftime(buff, sizeof(buff), "%Y:%m:%d", local_time);
+    std::string date(buff);
+    return (date);
 }
 
 bool    utils::checkEndStr(const std::string str, const std::string suffix) {

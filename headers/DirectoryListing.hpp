@@ -1,27 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Interface.hpp                                      :+:      :+:    :+:   */
+/*   DirectoryListing.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/01 05:22:20 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 17:10:50 by tlonghin         ###   ########.fr       */
+/*   Created: 2025/07/05 17:06:59 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/05 18:04:33 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <I_Location.hpp>
-#include <I_MethodsAllow.hpp>
-#include <I_ErrorPage.hpp>
-#include <I_Listen.hpp>
-#include <I_Host.hpp>
-#include <I_FolderList.hpp>
+#include <iostream>
+#include <map>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <InstanceInterface.hpp>
+#include <ctime>
 
-class I_Location;
-class I_MethodsAllow;
-class I_ErrorPage;
-class I_Listen;
-class I_Host;
-class I_FolderList;
+class DirectoryListing
+{
+private:
+    std::map<std::string, IS_FolderList> listing;
+public:
+    DirectoryListing();
+    std::map<std::string, IS_FolderList> getListing();
+    void    setListing(const std::string &path);
+    ~DirectoryListing();
+};
