@@ -21,11 +21,11 @@ class IS_FolderList : public I_FolderList
     private:
     public:
         void    setFolderName(const std::string &str);
-        void    setFolderSize(const std::size_t &size);
+        void    setFolderSize(const double &size);
         void    setLastEdit(const std::string &time);
         void    setFolderSuffix(const std::string &suffix);
         std::string getFolderName();
-        std::size_t getFolderSize();
+        double getFolderSize();
         std::string getFolderLastEdit();
         std::string getFolderSuffix();
         IS_FolderList();

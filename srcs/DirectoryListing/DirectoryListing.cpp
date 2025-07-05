@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 17:34:23 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 18:26:43 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 18:32:04 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void    DirectoryListing::setListing(const std::string &path) {
         }
     }
     for (std::map<std::string, IS_FolderList>::iterator it = this->listing.begin(); it != this->listing.end(); ++it) {
-        std::cout << "[" << it->first << "]" << " : " << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << " " << it->second.getFolderLastEdit() << std::endl; 
+        std::cout << "[" << it->second.getFolderName() << "]" << " : " << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << " " << it->second.getFolderLastEdit() << std::endl; 
     }
 }
 

@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 18:11:17 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 18:31:04 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void    IS_FolderList::setFolderName(const std::string &str) {
     this->folderMame = str;
 }
 
-void     IS_FolderList::setFolderSize(const std::size_t &size) {
+void     IS_FolderList::setFolderSize(const double &size) {
     this->folderSize = size;
 }
 

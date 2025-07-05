@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 18:11:35 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 18:31:11 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int         IS_ErrorPage::getErrorCode() {
 std::string IS_FolderList::getFolderName() {
     return (this->folderMame);
 }
-std::size_t IS_FolderList::getFolderSize() {
+double IS_FolderList::getFolderSize() {
     return (this->folderSize);
 }
 std::string IS_FolderList::getFolderLastEdit() {
