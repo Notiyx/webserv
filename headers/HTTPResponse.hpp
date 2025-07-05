@@ -1,35 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   E_poll.hpp                                         :+:      :+:    :+:   */
+/*   HTTPResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/04 16:25:11 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 06:42:29 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/04 23:41:36 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/05 05:17:58 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
-#include <AllException.hpp>
-#include <HTTPResponse.hpp>
-#include <Config.hpp>
-#include <sys/epoll.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <vector>
-#include <unistd.h>
+#include <sstream>
+#include <sys/types.h>
+#include <sys/socket.h>
 
-class E_poll {
+class HTTPResponse {
 	private:
-		int		epoll_fd;
-        Config  conf;
+		std::string msg;
+		int			res;
 	public:
-		E_poll(Config conf);
-		~E_poll();
-		void epollInit(int serv_fd);
-		void epollExec(int serv_fd);
-		bool isValidRequest(int client_fd, std::string &request);
-		void LaunchRequest(int client_fd, std::string& request);
+		HTTPResponse();
+		HTTPResponse(int res, std::string msg);
+		~HTTPResponse();
+		std::string buildResponse();
+		std::string buildGet(std::string filename);
+		void send(int client_fd);
+		void send(std::string filename, int client_fd);
+
 };

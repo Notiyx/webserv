@@ -6,13 +6,12 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:48:10 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 20:32:44 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 04:19:23 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Webserv.hpp>
 #include <E_poll.hpp>
-
 
 Webserv::Webserv() {}
 
@@ -22,11 +21,15 @@ void    Webserv::setConfig(const Config newConf) {
 
 void Webserv::launchServ() {
     std::cout << "server: " << conf.getServName() << " launched. Port: " << conf.getPort() << std::endl;
-    E_poll poll;
+    E_poll poll(conf);
     poll.epollInit(serv_fd);
-    while (true)
-    {
-        poll.epollLaunch(serv_fd);
+    try {
+        while (true)
+            poll.epollExec(serv_fd);
+    } catch (const fdError& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
     }
 };
 
