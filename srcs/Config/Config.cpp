@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 20:25:00 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 06:03:34 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void    Config::parseConfig(const char *av) {
         this->clientMaxRequest = parsingFunction::findMaxClientRequest(infile);
         this->errorPage = parsingFunction::findErrorPage(infile);
         this->location = parsingFunction::findLocation(infile);
-       // this->printConfig(strFile);
+        this->printConfig(strFile);
     } catch(const ConfigFileError& e) {
         throw (ConfigFileError(e));
     }
@@ -108,6 +108,22 @@ std::string     Config::getServName(){
 
 std::size_t    Config::getMaxClients(){
     return (clientMaxRequest);
+};
+
+bool    Config::isLocation(const std::string key) {
+    return this->location.find(key) != this->location.end();
+}
+
+std::string Config::getHostName() {
+    return (listen.getListenHostname());
+}
+
+std::string Config::getHostAndPort() {
+    return (host.getHostAndPort());
+}
+
+std::map<std::string, IS_Location>::iterator    Config::getLocation(std::string key) {
+    return (this->location.find(key));
 };
 
 

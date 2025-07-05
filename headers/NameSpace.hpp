@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 20:18:51 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 06:54:48 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <sstream>
 #include <InstanceInterface.hpp>
 #include <map>
+#include <sys/socket.h>
+
 
 namespace utils
 {
@@ -25,6 +27,8 @@ namespace utils
     bool        isOnlyDigit(const char *str);
     void        check_syscall(int ret, const char* syscall_name);
     bool        isOnlySpace(const char *str);
+    void        sender(int client_fd, std::string res);
+    std::string trim(const std::string& str);
 } // namespace utils
 
 namespace configUtils

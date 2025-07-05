@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:46:39 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/04 21:00:54 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,7 @@ std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
         }
         if (valueRead.size() + 8 > 15)
             throw (ConfigFileError("Error ClientMaxBodySize : Too longer request size plus only < 15 numbers !"));
-        requestSize = std::atol(valueRead.c_str());
+        std::cout << requestSize << std::endl;
         requestSize *= multiplicatorN;
         alreadySet = true;
     }
