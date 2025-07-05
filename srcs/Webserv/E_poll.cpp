@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 06:45:43 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:23:42 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,19 +138,11 @@ void E_poll::epollExec(int serv_fd) {
 			try {
 				std::string request;
 				if(isValidRequest(fd, request))
-				{
-					std::cout << "good request\n" << std::endl;
 					LaunchRequest(fd, request);
-				}
 				else
-				{
-					std::cout << "Client disconnected" << std::endl;
-					utils::check_syscall(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL), "epoll_ctl3");
 					close(fd);
-				}
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
-				utils::check_syscall(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL), "epoll_ctl4");
 				close(fd);
 			}
 		}

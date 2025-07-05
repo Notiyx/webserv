@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:48:10 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 04:19:23 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:12:04 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ void Webserv::setupServ() {
 	addr.sin_port = htons(conf.getPort());
 	//le serv ecoute sur toutes les ips disponibles;
 	addr.sin_addr.s_addr = INADDR_ANY;
+    int opt = 1;
+    setsockopt(serv_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     utils::check_syscall(bind(serv_fd, (sockaddr *)&addr, sizeof(addr)), "bind");
     utils::check_syscall(listen(serv_fd, SOMAXCONN), "listen");
 };

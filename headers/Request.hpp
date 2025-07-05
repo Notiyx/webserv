@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 06:39:27 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 18:10:40 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,6 @@ class Request {
 		void parseHeader();
 		void sendError(int code, std::string msg);
 		void execute();
+		std::string getContentType();
+		bool executePost(std::string filename);
 };
