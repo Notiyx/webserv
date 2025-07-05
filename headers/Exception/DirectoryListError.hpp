@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Interface.hpp                                      :+:      :+:    :+:   */
+/*   DirectoryListError.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/01 05:22:20 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 17:10:50 by tlonghin         ###   ########.fr       */
+/*   Created: 2025/06/30 08:00:29 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/02 06:01:32 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <I_Location.hpp>
-#include <I_MethodsAllow.hpp>
-#include <I_ErrorPage.hpp>
-#include <I_Listen.hpp>
-#include <I_Host.hpp>
-#include <I_FolderList.hpp>
+#include <iostream>
 
-class I_Location;
-class I_MethodsAllow;
-class I_ErrorPage;
-class I_Listen;
-class I_Host;
-class I_FolderList;
+class DirectoryListError : public std::exception {
+    private :
+        std::string msg;
+    public :
+        DirectoryListError(const char *a);
+        const char* what() const throw();
+        ~DirectoryListError() throw();
+};
