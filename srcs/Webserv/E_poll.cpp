@@ -6,14 +6,16 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/04 20:47:02 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 06:45:43 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <E_poll.hpp>
 #include <NameSpace.hpp>
+#include <HTTPResponse.hpp>
+#include <Request.hpp>
 
-E_poll::E_poll() : epoll_fd(-1) {};
+E_poll::E_poll(Config conf) : epoll_fd(-1), conf(conf){};
 
 E_poll::~E_poll() {};
 
@@ -29,34 +31,135 @@ void E_poll::epollInit(int serv_fd) {
 		throw std::runtime_error("Error: epoll_ctl");
 };
 
-void E_poll::epollLaunch(int serv_fd) {
+bool E_poll::isValidRequest(int client_fd, std::string &request) {
+	std::string req;
+	char buffer[4096];
+	int	 readed = 0;
+	int  bytes;
+	while (request.find("\r\n\r\n") == std::string::npos)
+	{
+		bytes = read(client_fd, buffer, sizeof(buffer));
+		if (bytes <= 0)
+		{
+			throw std::runtime_error("Error : read failed");
+			return (false);
+		}
+		if (bytes == 0)
+			break ;
+		request.append(buffer, bytes);
+		readed += bytes;
+		if (readed > 8000) {
+			HTTPResponse error(413, "Payload Too Large");
+			try {
+				error.send(client_fd);
+			} catch (const fdError &e) {
+				std::cerr << e.what() << std::endl;
+			}
+		return (false);
+		}
+	}
+	std::istringstream iss(request);
+	std::string method, path, version;
+	iss >> method >> path >> version;
+	if (method.empty() || path.empty() || version.empty() || version != "HTTP/1.1") {
+		HTTPResponse error(400, "Bad Request");
+		try {
+			error.send(client_fd);
+		} catch (const fdError &e) {
+			std::cerr << e.what() << std::endl;
+		}
+		return (false);
+	}
+	if (method != "GET" && method != "POST" && method != "DELETE")
+	{
+		HTTPResponse error(405, "Method Not Allowed");
+		try {
+			error.send(client_fd);
+		} catch (const fdError &e) {
+			std::cerr << e.what() << std::endl;
+		}
+		return (false);
+	}
+	if (!conf.isLocation(path))
+	{
+		HTTPResponse error(404, "Not Found");
+		try {
+			error.send(client_fd);
+		} catch (const fdError &e) {
+			std::cerr << e.what() << std::endl;
+		}
+		return (false);
+	}
+	std::map<std::string, IS_Location>::iterator location = conf.getLocation(path);
+	if ((method == "GET" && !location->second.getLocationGetMethod()) ||
+		(method == "POST" && !location->second.getLocationPostMethod()) ||
+		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
+	{
+		HTTPResponse error(405, "Method not Allowed");
+		try {
+			error.send(client_fd);
+		} catch (const fdError &e) {
+			std::cerr << e.what() << std::endl;
+		}
+		return (false);
+	}
+	return (true);
+};
+
+void E_poll::LaunchRequest(int client_fd, std::string& request) {
+	if (request.empty())
+		return ;
+	Request req(request, conf, client_fd);
+	req.parseHeader();
+	req.execute();
+};
+
+
+void E_poll::epollExec(int serv_fd) {
 	struct epoll_event events[1024];
-	//n = le nombre de clients qui ont besoin de trigger un event
+	//trigger = le nombre de clients qui ont besoin de trigger un event
 	int trigger = epoll_wait(epoll_fd, events, 1024, -1);
 	for (int i = 0; i < trigger; i++)
 	{
-		struct epoll_event event;
-		if (events[i].data.fd == serv_fd)
+		int fd = events[i].data.fd;
+		if (fd == serv_fd)
 		{
 			struct sockaddr_in client_addr;
        		socklen_t addr_len = sizeof(client_addr);
 			int client_fd = accept(serv_fd, (struct sockaddr*)&client_addr, &addr_len);
 			utils::check_syscall(client_fd, "accept");
-			event.events = EPOLLIN;
-			event.data.fd = client_fd;
-			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
-				throw std::runtime_error("Error: epoll_ctl");
+			struct epoll_event req;
+			req.events = EPOLLIN;
+			req.data.fd = client_fd;
+			utils::check_syscall(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &req), "epoll_ctl1");
 		}
-		//je verifie si il y a EPPOLIN dans les flags d'events
 		else if (events[i].events & EPOLLIN)
 		{
-			event.events = EPOLLOUT;
-			epoll_ctl(epoll_fd, EPOLL_CTL_MOD, events[i].data.fd, &event);
+			try {
+				std::string request;
+				if(isValidRequest(fd, request))
+				{
+					std::cout << "good request\n" << std::endl;
+					LaunchRequest(fd, request);
+				}
+				else
+				{
+					std::cout << "Client disconnected" << std::endl;
+					utils::check_syscall(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL), "epoll_ctl3");
+					close(fd);
+				}
+			} catch (const std::runtime_error& e) {
+				std::cerr << e.what() << std::endl;
+				utils::check_syscall(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL), "epoll_ctl4");
+				close(fd);
+			}
 		}
 		else if (events[i].events & EPOLLOUT)
 		{
-			event.events = EPOLLIN;
-			epoll_ctl(epoll_fd, EPOLL_CTL_MOD, events[i].data.fd, &event);
+			struct epoll_event req;
+			req.events = EPOLLIN;
+			req.data.fd = fd;
+			epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &req);
 		}
 	}
 };

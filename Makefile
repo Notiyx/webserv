@@ -13,19 +13,23 @@ OBJDIR = object
 SRCS = ./srcs/main.cpp \
 	   ./srcs/Utils.cpp \
 	   ./srcs/Webserv/Webserv.cpp \
-	   ./srcs/Webserv/E_poll.cpp 
+	   ./srcs/Webserv/E_poll.cpp \
+	   	./srcs/Webserv/HTTPResponse.cpp \
+	   	./srcs/Webserv/Request.cpp \
+
 
 
 CONFIG = ./srcs/Config/Config.cpp \
 		 ./srcs/Config/Parse/ParseConfigLocation.cpp \
-		 ./srcs/Config/Parse/ParseConfigListenHost.cpp 
+		 ./srcs/Config/Parse/ParseConfigListenHost.cpp \
 
 EXCEPTION = ./srcs/Exception/ConfigFileError.cpp \
-			./srcs/Exception/fdError.cpp
+			./srcs/Exception/fdError.cpp \
+
 
 IS = ./srcs/IS/InstanceInterface.cpp \
 	 ./srcs/IS/Getter.cpp \
-	 ./srcs/IS/Setter.cpp
+	 ./srcs/IS/Setter.cpp \
 
 SRCS += $(CONFIG) $(EXCEPTION) $(IS)
 

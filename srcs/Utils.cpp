@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 20:20:13 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 06:54:36 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,3 +99,28 @@ void    utils::check_syscall(int ret, const char* syscall_name) {
     if (ret < 0)
         throw fdError(std::string(syscall_name) + " failed: " + strerror(errno));
 };
+
+void utils::sender(int client_fd, std::string res) {
+		ssize_t total_sent = 0;
+		ssize_t to_send = res.size();
+		while (total_sent < to_send)
+		{
+			ssize_t sent = send(client_fd, (res.c_str() + total_sent), to_send - total_sent, 0);
+			if (sent == -1)
+			{
+				if (errno == EINTR) continue ;
+				if (errno == EAGAIN || errno == EWOULDBLOCK)
+					break ;
+				utils::check_syscall(sent, "send");
+			}
+			total_sent += sent;
+		}
+};
+
+std::string utils::trim(const std::string& str) {
+	size_t first = str.find_first_not_of(" \t\r\n");
+	if (first == std::string::npos)
+		return "";
+	size_t last = str.find_last_not_of(" \t\r\n");
+	return str.substr(first, last - first + 1);
+}

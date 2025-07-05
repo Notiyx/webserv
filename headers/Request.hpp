@@ -1,35 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   E_poll.hpp                                         :+:      :+:    :+:   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/04 16:25:11 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 06:42:29 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/05 06:39:27 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
-#include <AllException.hpp>
 #include <HTTPResponse.hpp>
+#include <NameSpace.hpp>
 #include <Config.hpp>
-#include <sys/epoll.h>
-#include <string.h>
-#include <netinet/in.h>
-#include <vector>
+#include <cstdlib>
+#include <sstream>
+#include <map>
 #include <unistd.h>
 
-class E_poll {
+class Request {
 	private:
-		int		epoll_fd;
-        Config  conf;
+		Config conf;
+		int	   client_fd;
+		enum Method {GET, POST, DELETE, OTHER};
+		Method method;
+		std::string path;
+		std::map<std::string, std::string> header;
+		std::string body;
+		void parse(std::string request);
 	public:
-		E_poll(Config conf);
-		~E_poll();
-		void epollInit(int serv_fd);
-		void epollExec(int serv_fd);
-		bool isValidRequest(int client_fd, std::string &request);
-		void LaunchRequest(int client_fd, std::string& request);
+		Request(std::string request, Config conf, int client_fd);
+		~Request();
+		void parseHeader();
+		void sendError(int code, std::string msg);
+		void execute();
 };
