@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigListenHost.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 21:00:54 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 15:34:17 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,11 @@ std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
         valueRead = valueRead.substr(0, valueRead.size() - 1);
         multiplicator = valueRead.substr(valueRead.size() - 1);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
+        if (valueRead.size() == 0) {
+            oss << "Error ClientMaxBodySize : Il manque un suffix 'm' ou 'M at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
         if (multiplicator == "M")
             multiplicatorN = 1000000;
         if (multiplicator == "m")
@@ -223,7 +228,7 @@ std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
         }
         if (valueRead.size() + 8 > 15)
             throw (ConfigFileError("Error ClientMaxBodySize : Too longer request size plus only < 15 numbers !"));
-        std::cout << requestSize << std::endl;
+        requestSize = std::atol(valueRead.c_str());
         requestSize *= multiplicatorN;
         alreadySet = true;
     }
