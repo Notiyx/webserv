@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 06:03:34 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:14:24 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void    Config::parseConfig(const char *av) {
         this->clientMaxRequest = parsingFunction::findMaxClientRequest(infile);
         this->errorPage = parsingFunction::findErrorPage(infile);
         this->location = parsingFunction::findLocation(infile);
-        this->printConfig(strFile);
+        //this->printConfig(strFile);
     } catch(const ConfigFileError& e) {
         throw (ConfigFileError(e));
     }

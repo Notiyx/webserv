@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 14:37:56 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 18:25:10 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,8 @@ void Request::parse(std::string request) {
 		{
 			if (line.find(':') == std::string::npos)
 			{
-				HTTPResponse error(400, "Bad Request");
-				try {
-					error.send(client_fd);
-				} catch (const fdError &e) {
-					std::cerr << e.what() << std::endl;
-				}
+				sendError(400, "Bad request");
+				return ;
 			}
 			std::istringstream issl(line);
 			std::getline(issl, key, ':');
@@ -114,21 +110,56 @@ void Request::parseHeader() {
 		}
 };
 
+std::string Request::getContentType() {
+	for(std::map<std::string, std::string>::iterator it = header.begin(); it != header.end(); ++it)
+	{
+		if (it->first == "Content-Type")
+			return (std::string(it->second));
+	}
+	return (NULL);
+};
+
+bool Request::executePost(std::string filename) {
+	std::ofstream file(filename.c_str(), std::ios::out | std::ios::app);
+	if (!file.is_open()) {
+		sendError(500, "Internal Server Error");
+		close(client_fd);
+		return (false);
+	}
+	std::istringstream iss(body);
+	std::string data;
+	while(std::getline(iss, data, '&'))
+		file << data << "\n";
+	file.close();
+	return (true);
+};
+
+
 void Request::execute() {
+	HTTPResponse valid;
+	std::string res;
+	std::map<std::string, IS_Location>::iterator it = conf.getLocation(path);
+	std::string root = it->second.getRoot();
+	std::string index = it->second.getIndex();
+	std::string fullpath = root + "/" + index;
 	if (method == GET)
 	{
-		std::map<std::string, IS_Location>::iterator it = conf.getLocation(path);
-		std::string filename = it->second.getIndex();
-		HTTPResponse valid;
-		std::string res = valid.buildGet(filename);
-		utils::sender(client_fd, res);
-		close(client_fd);
+		std::cout << "GET" << std::endl;
+		res = valid.buildGet(fullpath);
 	} else if (method == POST) {
-		std::cout << "POST" << std::endl;
+		if (getContentType() == "application/x-www-form-urlencoded")
+		{
+			std::cout << "POST" << std::endl;
+			res = valid.buildPost();
+			if (!executePost(fullpath))
+				return ;
+		}
 	} else if (method == DELETE) {
 		std::cout << "DELETE" << std::endl;
 	}else {
 		sendError(405, "Method Not Allowed");
 		return ;
 	}
+	utils::sender(client_fd, res);
+	close(client_fd);
 };

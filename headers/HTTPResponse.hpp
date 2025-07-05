@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:36 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 05:17:58 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 17:14:54 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class HTTPResponse {
 		~HTTPResponse();
 		std::string buildResponse();
 		std::string buildGet(std::string filename);
+		std::string buildPost();
 		void send(int client_fd);
 		void send(std::string filename, int client_fd);
-
 };

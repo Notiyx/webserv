@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 07:04:08 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/05 17:16:49 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@ std::string HTTPResponse::buildResponse() {
 	iss << "<html><body><h1>" << res << " " << msg << "</h1></body></html>";
 	return iss.str();
 }
+
+std::string HTTPResponse::buildPost() {
+		std::ostringstream oss;
+		oss << "HTTP/1.1 201 Created\r\n";
+		oss << "Content-Length: 0\r\n";
+		oss << "Connection: close\r\n\r\n";
+		return oss.str();
+};
+
 
 std::string HTTPResponse::buildGet(std::string filename) {
 	std::ifstream file(filename.c_str(), std::ios::binary);
