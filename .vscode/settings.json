@@ -4,6 +4,7 @@
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
+        "*.tcc": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -15,6 +16,7 @@
         "cstdio": "cpp",
         "cstdlib": "cpp",
         "cstring": "cpp",
+        "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
@@ -50,5 +52,6 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "livePreview.defaultPreviewPath": "/front/404.html"
 }

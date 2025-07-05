@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:36:16 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/01 08:34:30 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/05 18:04:07 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ I_MethodsAllow::~I_MethodsAllow() {}
 I_ErrorPage::~I_ErrorPage() {}
 I_Listen::~I_Listen() {}
 I_Host::~I_Host() {}
+I_FolderList::~I_FolderList() {}
 
 
 IS_MethodsAllow::IS_MethodsAllow() {}
@@ -34,3 +35,6 @@ IS_Listen::~IS_Listen() {}
 
 IS_Host::IS_Host() {}
 IS_Host::~IS_Host() {}
+
+IS_FolderList::IS_FolderList() {}
+IS_FolderList::~IS_FolderList() {}
