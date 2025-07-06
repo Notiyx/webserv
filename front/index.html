@@ -1,54 +1,86 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-	<meta charset="UTF-8">
-	<title>Tuck fom</title>
-	<style>
-		body {
-			background-color: #111;
-			color: #fff;
-			font-family: sans-serif;
-			text-align: center;
-			margin: 0;
-			padding: 0;
-		}
-		.container {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			min-height: 100vh;
-		}
-		h1 {
-			font-size: 3em;
-			margin-bottom: 0.5em;
-		}
-		p {
-			font-size: 1.5em;
-			margin-bottom: 2em;
-		}
-		img {
-			max-width: 80%;
-			height: auto;
-			border-radius: 10px;
-			box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-		}
-	</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Webserv - AKA NICOSERV3000</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      background-color: #1e1e2f;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #3c3c6e;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    label.upload-btn {
+      padding: 15px 30px;
+      font-size: 16px;
+      background-color: #1e1e2f;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    label.upload-btn:hover {
+      background-color: #3c3c6e;
+    }
+  </style>
 </head>
 <body>
-	<div class="container">
-		<h1>WebServ en 2 semaines</h1>
-		<p>Cheh à toi si tu lis ça</p>
-		<li>
-			IMAGINE
-		</li>
-		<li>
-			TU LE FAIS
-		</li>
-		<li>
-			EN UNE SEMAINE
-		</li>
-		<img src="https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif" alt="Rick Astley dancing">
-	</div>
+  <h1>Bienvenue sur NICOSERV3000</h1>
+  <div class="btn-container">
+    <label class="upload-btn" for="fileUpload">Upload</label>
+    <input type="file" id="fileUpload" name="file">
+    <button onclick="handleGet()">GET</button>
+    <button onclick="handleRequest()">Request</button>
+  </div>
+
+  <script>
+    function handleGet() {
+      alert("GET request triggered (à implémenter)");
+    }
+
+    function handleRequest() {
+      alert("Request triggered (à implémenter)");
+    }
+  </script>
+
 </body>
 </html>
