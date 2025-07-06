@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 16:53:12 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/06 07:18:03 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <sstream>
 #include <InstanceInterface.hpp>
 #include <map>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <ctime>
 
@@ -30,7 +31,8 @@ namespace utils
     bool        isOnlySpace(const char *str);
     void        sender(int client_fd, std::string res);
     std::string trim(const std::string& str);
-    std::string  getDateCurrent();
+    std::string getDateCurrent();
+    bool        fileExist(std::string path);
 } // namespace utils
 
 namespace configUtils

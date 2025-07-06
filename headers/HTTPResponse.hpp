@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:36 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 17:14:54 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 06:38:23 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <sstream>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <NameSpace.hpp>
+#include <AllException.hpp>
+#include <DirectoryListing.hpp>
 
 class HTTPResponse {
 	private:
@@ -25,6 +28,7 @@ class HTTPResponse {
 		HTTPResponse(int res, std::string msg);
 		~HTTPResponse();
 		std::string buildResponse();
+		std::string buildDirectoryList(std::string path);
 		std::string buildGet(std::string filename);
 		std::string buildPost();
 		void send(int client_fd);

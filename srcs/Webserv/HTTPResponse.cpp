@@ -6,19 +6,55 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 17:16:49 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 07:18:48 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <HTTPResponse.hpp>
-#include <NameSpace.hpp>
-#include <AllException.hpp>
+
+        // <div class="directory-row">
+        //     <div class="directory-name"><a href="../config/">Config/</a></div>
+        //     <div class="directory-size">-</div>
+        //     <div class="directory-date">2025-06-30 10:10</div>
+        // </div>
 
 HTTPResponse::HTTPResponse() : msg(""), res(0) {};
 
 HTTPResponse::HTTPResponse(int res, std::string msg): msg(msg), res(res) {};
 
 HTTPResponse::~HTTPResponse() {};
+
+std::string HTTPResponse::buildDirectoryList(std::string path) {
+	DirectoryListing directoryList;
+	directoryList.setListing(path);
+	// std::map<std::string, IS_FolderList> list = directoryList.getListing();
+	// std::map<std::string, IS_FolderList>::iterator it = list.begin();
+	std::ifstream file("front/directoryList.html", std::ios::binary);
+	if (!file.is_open())
+	{
+		std::ostringstream oss;
+		oss << "HTTP/1.1 404 Not Found\r\n";
+        oss << "Content-Length: 0\r\n";
+        oss << "Connection: close\r\n\r\n";
+        return oss.str();
+	}
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string content = buffer.str();
+	std::string placeholder = "<!-- INSERT HERE -->";
+	size_t pos = content.find(placeholder);
+	if (pos == std::string::npos)
+	{
+		//faut catch et renvoyer une erreur 500 mais il est 7h du mat j'ai trop la flemme aled
+		throw std::runtime_error("Internal Server Error: template missing placeholder");
+	}
+	content.erase(pos, placeholder.length());
+	//j'insere mon html dynamiquement
+	//faut faire une fonction build 
+	//directoryHTML et build la response de la requete ici
+	//flemme la
+	return (content);
+};
 
 std::string HTTPResponse::buildResponse() {
 	std::stringstream iss;
