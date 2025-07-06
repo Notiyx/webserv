@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:22:21 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 17:58:18 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,7 @@ void Request::parseHeader() {
 			{
 				size_t size = std::atoi(it->second.c_str());
 				//faut cast mieux mais il est tard
-				if (size > (size_t)5242880 || size > (size_t)std::numeric_limits<int>::max())
+				if (size > static_cast<size_t>(50000000) || size > static_cast<size_t>(std::numeric_limits<int>::max()))
 				{
 					sendError(413, "Payload Too Large");
 					return ;

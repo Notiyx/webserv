@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:20:59 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 17:58:07 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,14 @@ void E_poll::epollInit(int serv_fd) {
 
 bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	std::string req;
-	char buffer[100000];
+	char* buffer;
+	try {
+	    buffer = new char[50000000];
+	}
+	catch (const std::bad_alloc& e) {
+	    std::cerr << "Erreur d'allocation mémoire : " << e.what() << std::endl;
+		return (false);
+	}
 	int	 readed = 0;
 	int  bytes;
 	bool contentLength = false;
@@ -44,18 +51,20 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		if (bytes <= 0)
 		{
 			throw std::runtime_error("Error : read failed");
+			delete [] buffer;
 			return (false);
 		}
 		request.append(buffer, bytes);
 		readed += bytes;
-		if (readed > 100000) {
+		if (readed > 50000000) {
 			HTTPResponse error(413, "Payload Too Large");
 			try {
 				error.send(client_fd);
 			} catch (const fdError &e) {
 				std::cerr << e.what() << std::endl;
 			}
-		return (false);
+			delete [] buffer;
+			return (false);
 		}
 	}
 	size_t end_header = request.find("\r\n\r\n");
@@ -78,10 +87,11 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 			if (bytes <= 0)
 			{
 				throw std::runtime_error("Error: read failed on body");
+				delete [] buffer;
 				return (false);
 			}
 			request.append(buffer, bytes);
-			if (request.size() > 100000)
+			if (request.size() > 50000000)
 			{
 				HTTPResponse error(413, "Payload Too Large");
 				try {
@@ -89,6 +99,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 				} catch (const fdError &e) {
 					std::cerr << e.what() << std::endl;
 				}
+				delete [] buffer;
 				return (false);
 			}
 		}
@@ -103,6 +114,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		} catch (const fdError &e) {
 			std::cerr << e.what() << std::endl;
 		}
+		delete [] buffer;
 		return (false);
 	}
 	if (method != "GET" && method != "POST" && method != "DELETE")
@@ -113,6 +125,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		} catch (const fdError &e) {
 			std::cerr << e.what() << std::endl;
 		}
+		delete [] buffer;
 		return (false);
 	}
 	if (!conf.isLocation(path))
@@ -123,6 +136,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		} catch (const fdError &e) {
 			std::cerr << e.what() << std::endl;
 		}
+		delete [] buffer;
 		return (false);
 	}
 	std::map<std::string, IS_Location>::iterator location = conf.getLocation(path);
@@ -136,8 +150,10 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		} catch (const fdError &e) {
 			std::cerr << e.what() << std::endl;
 		}
+		delete [] buffer;
 		return (false);
 	}
+	delete [] buffer;
 	return (true);
 };
 
