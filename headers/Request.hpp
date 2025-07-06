@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 05:58:46 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 17:19:08 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class Request {
 		void sendError(int code, std::string msg);
 		void execute();
 		std::string getContentType();
+		std::string getMethod();
 		bool executePost(std::string filename);
 		bool executeUpload(data part, std::string uploadPath);
 		std::string	getUniqueFilename(std::string directory, std::string filename);

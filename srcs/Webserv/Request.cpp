@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 07:20:07 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 17:22:21 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,20 @@ void Request::parseBodyPart(std::string part) {
 	}
 	bodyParts.push_back(newReq);
 };
+
+std::string Request::getMethod() {
+	if (method == GET)
+		return ("GET");
+	else if (method == POST)
+		return ("POST");
+	else if (method == DELETE)
+		return ("DELETE");
+	else
+		return (NULL);
+};
+
+
+
 
 void Request::parseBody() {
 	std::string delimiteur = boundary;
@@ -317,13 +331,13 @@ void Request::execute() {
 	if (method == GET)
 	{
 		std::cout << "GET" << std::endl;
-		if (it->second.getDirectoryListing() 
+/* 		if (it->second.getDirectoryListing() 
 			&& it->second.getIndex().empty() && utils::fileExist(fullpath))
 		{
 			res = valid.buildDirectoryList(fullpath);
 		}
-		else
-			res = valid.buildGet(fullpath);
+		else */
+		res = valid.buildGet(fullpath);
 	} else if (method == POST) {
 
 		if (getContentType() == "application/x-www-form-urlencoded")

@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 03:47:44 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 17:20:59 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,8 @@ void E_poll::LaunchRequest(int client_fd, std::string& request) {
 		return ;
 	Request req(request, conf, client_fd);
 	req.parseHeader();
-	req.parseBody();
+	if (req.getMethod() == "POST")
+		req.parseBody();
 	req.execute();
 };
 
