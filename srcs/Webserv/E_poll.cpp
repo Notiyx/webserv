@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/05 16:23:42 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 03:47:44 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,11 @@ void E_poll::epollInit(int serv_fd) {
 
 bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	std::string req;
-	char buffer[4096];
+	char buffer[100000];
 	int	 readed = 0;
 	int  bytes;
+	bool contentLength = false;
+	int  length = 0;
 	while (request.find("\r\n\r\n") == std::string::npos)
 	{
 		bytes = read(client_fd, buffer, sizeof(buffer));
@@ -44,11 +46,9 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 			throw std::runtime_error("Error : read failed");
 			return (false);
 		}
-		if (bytes == 0)
-			break ;
 		request.append(buffer, bytes);
 		readed += bytes;
-		if (readed > 8000) {
+		if (readed > 100000) {
 			HTTPResponse error(413, "Payload Too Large");
 			try {
 				error.send(client_fd);
@@ -56,6 +56,41 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 				std::cerr << e.what() << std::endl;
 			}
 		return (false);
+		}
+	}
+	size_t end_header = request.find("\r\n\r\n");
+	std::string headers = request.substr(0, end_header);
+	
+	size_t pos = headers.find("Content-Length");
+	if (pos != std::string::npos)
+	{
+		size_t start = headers.find_first_not_of(" ", pos + 15);
+		size_t end = headers.find("\r\n", start);
+		std::string length_str = headers.substr(start, end - start);
+		length = std::atoi(length_str.c_str());
+		contentLength = true;
+	}
+	if (contentLength) {
+		size_t total = end_header + 4 + length;
+		while (request.size() < total) 
+		{
+			bytes = read(client_fd, buffer, sizeof(buffer));
+			if (bytes <= 0)
+			{
+				throw std::runtime_error("Error: read failed on body");
+				return (false);
+			}
+			request.append(buffer, bytes);
+			if (request.size() > 100000)
+			{
+				HTTPResponse error(413, "Payload Too Large");
+				try {
+					error.send(client_fd);
+				} catch (const fdError &e) {
+					std::cerr << e.what() << std::endl;
+				}
+				return (false);
+			}
 		}
 	}
 	std::istringstream iss(request);
@@ -111,6 +146,7 @@ void E_poll::LaunchRequest(int client_fd, std::string& request) {
 		return ;
 	Request req(request, conf, client_fd);
 	req.parseHeader();
+	req.parseBody();
 	req.execute();
 };
 

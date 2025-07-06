@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 17:33:22 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/06 06:20:34 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,3 +133,10 @@ std::string utils::trim(const std::string& str) {
 	size_t last = str.find_last_not_of(" \t\r\n");
 	return str.substr(first, last - first + 1);
 }
+
+bool utils::fileExist(std::string path)
+{
+	struct stat buffer;
+	return (stat(path.c_str(), &buffer) == 0);
+}
+
