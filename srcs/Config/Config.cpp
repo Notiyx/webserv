@@ -122,8 +122,30 @@ std::string Config::getHostAndPort() {
     return (host.getHostAndPort());
 }
 
-std::map<std::string, IS_Location>::iterator    Config::getLocation(std::string key) {
+std::map<std::string, IS_Location>::iterator     Config::getLocation(std::string key) {
     return (this->location.find(key));
+}
+
+std::map<std::string, IS_Location>::iterator  Config::getBestLocation(const std::string &path){
+    std::map<std::string, IS_Location>::iterator comp = location.end();
+    size_t len = 0;
+    for (std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
+    {
+        std::string locationPath = it->first;
+        if (path.compare(0, locationPath.size(), locationPath) == 0)
+        {
+            if (locationPath.size() > len)
+            {
+                len = locationPath.size();
+                comp = it;
+            }
+        }
+    }
+    return (comp);
+};
+
+std::map<std::string, IS_Location>::iterator  Config::locationEnd() {
+	return location.end();
 }
 
 

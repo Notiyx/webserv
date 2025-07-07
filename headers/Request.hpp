@@ -6,12 +6,13 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:19:08 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/07 07:37:14 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
+#include <CGI.hpp>
 #include <HTTPResponse.hpp>
 #include <NameSpace.hpp>
 #include <Config.hpp>
@@ -42,19 +43,25 @@ class Request {
 		std::vector<data> bodyParts;
 		std::string body;
 		std::string boundary;
+		std::string path_info;
+		std::string query_string;
+		std::vector<std::string> env;
+		bool 		isCGI;
 		void parse(std::string request);
 	public:
 		Request(std::string request, Config conf, int client_fd);
 		~Request();
+		void pathCGI();
 		void parseHeader();
 		void parseBodyPart(std::string part);
 		void parseBody();
 		void sendError(int code, std::string msg);
+		std::string pathManager(const std::string& root, const std::string& path);
 		void execute();
 		std::string getContentType();
 		std::string getMethod();
 		bool executePost(std::string filename);
 		bool executeUpload(data part, std::string uploadPath);
+		std::string deleteFiles(std::string filename);
 		std::string	getUniqueFilename(std::string directory, std::string filename);
-
 };

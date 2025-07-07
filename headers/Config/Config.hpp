@@ -41,6 +41,8 @@ class Config {
         std::string     getSpecificErrorPage(int code);
         std::string     getServName();
         bool            isLocation(std::string key);
-        std::map<std::string, IS_Location>::iterator    getLocation(std::string key);
+        std::map<std::string, IS_Location>::iterator  locationEnd();
+		std::map<std::string, IS_Location>::iterator  getBestLocation(const std::string &path);
+        std::map<std::string, IS_Location>::iterator     getLocation(std::string key);
         ~Config();
 };

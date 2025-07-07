@@ -30,9 +30,10 @@ class HTTPResponse {
 		HTTPResponse(int res, std::string msg, Config &conf);
 		~HTTPResponse();
 		std::string buildResponse();
+		std::string buildFile(std::string path);
 		std::string buildDirectoryList(std::string path);
+		std::string buildDirectoryListHtml(std::string path);
 		std::string buildGet(std::string filename);
 		std::string buildPost();
 		void send(int client_fd);
-		void send(std::string filename, int client_fd);
 };

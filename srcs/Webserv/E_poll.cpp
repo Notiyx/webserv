@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
 /*   Updated: 2025/07/06 18:11:44 by tlonghin         ###   ########.fr       */
@@ -30,6 +30,8 @@ void E_poll::epollInit(int serv_fd) {
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, serv_fd, &event) == -1)
 		throw std::runtime_error("Error: epoll_ctl");
 };
+
+
 
 bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	std::string req;
@@ -128,7 +130,8 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		delete [] buffer;
 		return (false);
 	}
-	if (!conf.isLocation(path))
+	std::map<std::string, IS_Location>::iterator  location = conf.getBestLocation(path);
+	if (location == conf.locationEnd())
 	{
 		HTTPResponse error(404, "Not Found", this->conf);
 		try {
@@ -139,7 +142,6 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		delete [] buffer;
 		return (false);
 	}
-	std::map<std::string, IS_Location>::iterator location = conf.getLocation(path);
 	if ((method == "GET" && !location->second.getLocationGetMethod()) ||
 		(method == "POST" && !location->second.getLocationPostMethod()) ||
 		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
@@ -190,8 +192,12 @@ void E_poll::epollExec(int serv_fd) {
 		{
 			try {
 				std::string request;
-				if(isValidRequest(fd, request))
+				bool valid = isValidRequest(fd, request);
+				if(valid)
+				{
+					std::cout << "JE PASSE ICI" << std::endl;
 					LaunchRequest(fd, request);
+				}
 				else
 					close(fd);
 			} catch (const std::runtime_error& e) {

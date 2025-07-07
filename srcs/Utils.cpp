@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 06:20:34 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 19:13:20 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,5 +138,21 @@ bool utils::fileExist(std::string path)
 {
 	struct stat buffer;
 	return (stat(path.c_str(), &buffer) == 0);
+}
+
+bool utils::isFile(const std::string& path)
+{
+    struct stat buffer;
+    if (stat(path.c_str(), &buffer) != 0)
+        return false;
+    return S_ISREG(buffer.st_mode);
+}
+
+bool utils::isDirectory(const std::string& path)
+{
+    struct stat buffer;
+    if (stat(path.c_str(), &buffer) != 0)
+        return false;
+    return S_ISDIR(buffer.st_mode);
 }
 
