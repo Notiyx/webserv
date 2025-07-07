@@ -16,7 +16,8 @@ SRCS = ./srcs/main.cpp \
 	   ./srcs/Webserv/E_poll.cpp \
 	   ./srcs/Webserv/HTTPResponse.cpp \
 	   ./srcs/Webserv/Request.cpp \
-	   ./srcs/DirectoryListing/DirectoryListing.cpp
+	   ./srcs/DirectoryListing/DirectoryListing.cpp \
+	   ./srcs/Webserv/CGI.cpp \
 
 
 

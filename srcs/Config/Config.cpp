@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 16:14:24 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 20:08:37 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,31 @@ std::string Config::getHostAndPort() {
     return (host.getHostAndPort());
 }
 
-std::map<std::string, IS_Location>::iterator    Config::getLocation(std::string key) {
+std::map<std::string, IS_Location>::iterator     Config::getLocation(std::string key) {
     return (this->location.find(key));
 };
+
+std::map<std::string, IS_Location>::iterator  Config::getBestLocation(const std::string &path){
+    std::map<std::string, IS_Location>::iterator comp = location.end();
+    size_t len = 0;
+    for (std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
+    {
+        std::string locationPath = it->first;
+        if (path.compare(0, locationPath.size(), locationPath) == 0)
+        {
+            if (locationPath.size() > len)
+            {
+                len = locationPath.size();
+                comp = it;
+            }
+        }
+    }
+    return (comp);
+};
+
+std::map<std::string, IS_Location>::iterator  Config::locationEnd() {
+	return location.end();
+}
 
 
 Config::~Config() {}

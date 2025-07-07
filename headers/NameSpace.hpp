@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 07:18:03 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 19:14:28 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ namespace utils
     std::string trim(const std::string& str);
     std::string getDateCurrent();
     bool        fileExist(std::string path);
+    bool        isFile(const std::string& path);
+    bool        isDirectory(const std::string& path);
 } // namespace utils
 
 namespace configUtils

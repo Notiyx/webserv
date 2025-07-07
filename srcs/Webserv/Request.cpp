@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:58:18 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/07 08:20:46 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,52 @@ Request::Request(std::string request, Config conf, int client_fd) : conf(conf), 
 
 Request::~Request() {};
 
+void Request::pathCGI() {
+	size_t posExt = path.find(".py");
+	if (posExt == std::string::npos)
+		return ;
+	this->isCGI = true;
+	posExt += 3;
+	
+	size_t posQuery = path.find('?');
+	
+	std::string before_query;
+    if (posQuery == std::string::npos)
+		before_query = path;
+    else
+		before_query = path.substr(0, posQuery);
+		
+		
+	std::string script_path = before_query.substr(0, posExt);
+	
+    std::string path_info = "";
+    if (posExt < before_query.size())
+        path_info = before_query.substr(posExt);
+		
+    std::string query_string = "";
+    if (posQuery != std::string::npos)
+		query_string = path.substr(posQuery + 1);
+		
+	this->path = script_path;
+	this->path_info = path_info;
+	this->query_string = query_string;
+};
 
 void Request::parse(std::string request) {
 		std::istringstream iss(request);
 		std::string meth;
 		std::string line;
-		iss >> meth >> path;
+		this->isCGI = false;
+		iss >> meth >> this->path;
+		pathCGI();
 		if (meth == "GET")
-			method = GET;
+			this->method = GET;
 		else if (meth == "POST")
-			method = POST;
+			this->method = POST;
 		else if (meth == "DELETE")
-			method = DELETE;
+			this->method = DELETE;
 		else
-			method = OTHER;
+			this->method = OTHER;
 		std::string key;
 		std::string content;
 		std::getline(iss, line);
@@ -39,7 +71,7 @@ void Request::parse(std::string request) {
 		{
 			if (line.find(':') == std::string::npos)
 			{
-				sendError(420, "Bad request");
+				sendError(400, "Bad request");
 				return ;
 			}
 			std::istringstream issl(line);
@@ -62,7 +94,7 @@ void Request::parse(std::string request) {
 		size_t pos = request.find("\r\n\r\n");
 		if (pos == std::string::npos)
 		{
-			sendError(430, "Bad request");
+			sendError(400, "Bad request");
 			return ;
 		} 
 		if (header.find("Content-Length") != header.end())
@@ -138,9 +170,6 @@ std::string Request::getMethod() {
 		return (NULL);
 };
 
-
-
-
 void Request::parseBody() {
 	std::string delimiteur = boundary;
 	std::string end_delimiteur = "--" + boundary + "--";
@@ -164,58 +193,58 @@ void Request::parseBody() {
 	}
 };
 
+
 void Request::parseHeader() {
-		bool ishost = false;
-		for(std::map<std::string, std::string>::iterator it = header.begin(); it != header.end(); ++it)
+	bool ishost = false;
+	for(std::map<std::string, std::string>::iterator it = header.begin(); it != header.end(); ++it)
+	{
+		if ((method == GET || method == DELETE) && !body.empty())
 		{
-			if ((method == GET || method == DELETE) && !body.empty())
-			{
-				sendError(401, "Bad Request");
-				return ;
-			}
-			if (it->first == "Host")
-			{
-				ishost = true;
-				if (it->second != conf.getHostAndPort())
-				{
-					sendError(402, "Bad Request");
-					return ;
-				}
-			}
-			if (method == POST && it->first == "Content-Length")
-			{
-				size_t size = std::atoi(it->second.c_str());
-				//faut cast mieux mais il est tard
-				if (size > static_cast<size_t>(50000000) || size > static_cast<size_t>(std::numeric_limits<int>::max()))
-				{
-					sendError(413, "Payload Too Large");
-					return ;
-				}
-				if (body.length() != size)
-				{
-					sendError(403, "Bad Request");
-					return ;
-				}
-			}
-			if (method == POST && it->first == "Content-Type")
-			{
-				if (it->second != "application/x-www-form-urlencoded"
-					&& (it->second.find("multipart/form-data;") == std::string::npos))
-				{
-					std::map<std::string, IS_Location>::iterator itLoc = conf.getLocation(path);
-					if (itLoc->second.getUploadEnable())
-						sendError(415, "Uploads are disabled on this location");
-					else
-						sendError(404, "Bad Request");
-					return ;
-				}
-			}
-		}
-		if (!ishost)
-		{
-			sendError(405, "Bad Request");
+			sendError(400, "Bad Request");
 			return ;
 		}
+		if (it->first == "Host")
+		{
+			ishost = true;
+			if (it->second != conf.getHostAndPort())
+			{
+				sendError(400, "Bad Request");
+				return ;
+			}
+		}
+		if (method == POST && it->first == "Content-Length")
+		{
+			size_t size = std::atoi(it->second.c_str());
+			//faut cast mieux mais il est tard
+			if (size > static_cast<size_t>(50000000) || size > static_cast<size_t>(std::numeric_limits<int>::max()))
+			{
+				sendError(413, "Payload Too Large");
+				return ;
+			}
+			if (body.length() != size)
+			{
+				sendError(400, "Bad Request");
+				return ;
+			}
+		}
+		if (method == POST && it->first == "Content-Type")
+		{
+			if (it->second != "application/x-www-form-urlencoded"
+				&& (it->second.find("multipart/form-data;") == std::string::npos))
+			{
+				std::map<std::string, IS_Location>::iterator  itLoc = conf.getLocation(path);
+				if (itLoc->second.getUploadEnable())
+					sendError(415, "Uploads are disabled on this location");
+				else
+					sendError(400, "Bad Request");
+				return ;
+			}
+		}
+	}
+	if (!ishost) {
+		sendError(400, "Bad Request");
+		return ;
+	}
 };
 
 std::string Request::getContentType() {
@@ -257,7 +286,6 @@ std::string	Request::getUniqueFilename(std::string directory, std::string filena
 		newName = oss.str();
 		count++;
 	}
-	std::cout << newName << std::endl;
 	return (newName);
 }
 
@@ -267,13 +295,12 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		if (part.filename.find("..") != std::string::npos ||
 			part.filename.find('/') != std::string::npos ||
 			part.filename.find('\\') != std::string::npos) 
-			{
+		{
 			sendError(400, "Bad Request: Invalid filename");
 			return (false);
-			}
+		}
 		std::string uniqueFilename = getUniqueFilename("front/uploads", part.filename);
 		std::string fullpath = uploadPath + "/" + uniqueFilename;
-		std::cout << "fullpath " << uploadPath << std::endl;
 		struct stat st;
 		if (stat("front/uploads", &st) == -1)
 			mkdir("front/uploads", 0755);
@@ -288,7 +315,7 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		file.close();
 	} else 
 	{
-		std::map<std::string, IS_Location>::iterator it = conf.getLocation(path);
+		std::map<std::string, IS_Location>::iterator  it = conf.getLocation(path);
 		std::string root = it->second.getRoot();
 		std::string index = it->second.getIndex();
 		std::string fullpath = root + "/" + index;
@@ -320,24 +347,74 @@ bool Request::executePost(std::string filename) {
 	return (true);
 };
 
+std::string Request::pathManager(const std::string& root, const std::string& path) {
+	if(root.empty())
+		return (path);
+	std::string newRoot = root;
+	std::string newPath = path;
+
+	if (!newRoot.empty() && newRoot[newRoot.size() - 1] == '/')
+		newRoot = newRoot.substr(0, newRoot.size() - 1);
+	if (!newPath.empty() && newPath[0] == '/')
+		newPath = newPath.substr(1);
+	return newRoot + "/" + newPath;
+};
+
+std::string Request::deleteFiles(std::string filename) {
+	if (filename.find("..") != std::string::npos ||
+	filename.find('\\') != std::string::npos) 
+	{
+		sendError(400, "Bad Request: Invalid filename");
+		return (NULL);
+	}
+	if (access(filename.c_str(), F_OK) != 0) 
+	{
+		std::cout << "path: |" << filename <<  "|" << std::endl;
+		sendError(404, "File Not Found");
+		return (NULL);
+	}
+	if (remove(filename.c_str()) != 0) 
+	{
+		sendError(500, "Could Not Delete File");
+		return (NULL);
+	}
+	return("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");
+};
+
 
 void Request::execute() {
 	HTTPResponse valid;
 	std::string res;
-	std::map<std::string, IS_Location>::iterator it = conf.getLocation(path);
+	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(path);
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
-	std::string fullpath = root + "/" + index;
-	if (method == GET)
+	std::cerr << "Request method: " << method << ", path: " << this->path << std::endl;
+	if (method == DELETE)
+		root += "/uploads";
+	std::string fullpath = pathManager(root, path);
+	if (this->isCGI)
+	{
+		try {
+		CGI cgi(getMethod(), path, body, path_info, query_string, conf, header);
+		cgi.execCGI();
+		} catch (std::runtime_error& e) { sendError(500, e.what()); return ;}
+	}
+		if (method == GET)
 	{
 		std::cout << "GET" << std::endl;
-/* 		if (it->second.getDirectoryListing() 
-			&& it->second.getIndex().empty() && utils::fileExist(fullpath))
+		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)))
 		{
-			res = valid.buildDirectoryList(fullpath);
+			try {
+				res = valid.buildDirectoryList(fullpath); 
+			}
+			catch (const std::runtime_error& e) { sendError(500, "Internal Server Error"); }
+		} else if (utils::isFile(fullpath.substr(1)))
+			res = valid.buildGet(fullpath);
+		else
+		{
+			fullpath += index;
+			res = valid.buildGet(fullpath);
 		}
-		else */
-		res = valid.buildGet(fullpath);
 	} else if (method == POST) {
 
 		if (getContentType() == "application/x-www-form-urlencoded")
@@ -360,6 +437,7 @@ void Request::execute() {
 		}
 	} else if (method == DELETE) {
 		std::cout << "DELETE" << std::endl;
+		res = deleteFiles(fullpath);
 	}else {
 		sendError(405, "Method Not Allowed");
 		return ;
