@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 18:30:47 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/07 21:50:36 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,17 +128,17 @@ std::map<std::string, IS_Location>::iterator     Config::getLocation(std::string
 
 std::map<std::string, IS_Location>::iterator  Config::getBestLocation(const std::string &path){
     std::map<std::string, IS_Location>::iterator comp = location.end();
-    size_t len = 0;
     for (std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
     {
         std::string locationPath = it->first;
-        if (path.compare(0, locationPath.size(), locationPath) == 0)
+        if (locationPath == "/")
         {
-            if (locationPath.size() > len)
-            {
-                len = locationPath.size();
+            if (path == locationPath)
                 comp = it;
-            }
+        }
+        else if (path.compare(0, locationPath.size(), locationPath) == 0)
+        {
+                comp = it;
         }
     }
     return (comp);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 18:11:44 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/07 21:53:09 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,7 @@ void E_poll::epollExec(int serv_fd) {
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
 				close(fd);
+				return ;
 			}
 		}
 		else if (events[i].events & EPOLLOUT)
