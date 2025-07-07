@@ -6,17 +6,11 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 07:18:48 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/07 04:20:19 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <HTTPResponse.hpp>
-
-        // <div class="directory-row">
-        //     <div class="directory-name"><a href="../config/">Config/</a></div>
-        //     <div class="directory-size">-</div>
-        //     <div class="directory-date">2025-06-30 10:10</div>
-        // </div>
 
 HTTPResponse::HTTPResponse() : msg(""), res(0) {};
 
@@ -24,11 +18,11 @@ HTTPResponse::HTTPResponse(int res, std::string msg): msg(msg), res(res) {};
 
 HTTPResponse::~HTTPResponse() {};
 
-std::string HTTPResponse::buildDirectoryList(std::string path) {
+std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	DirectoryListing directoryList;
-	directoryList.setListing(path);
-	// std::map<std::string, IS_FolderList> list = directoryList.getListing();
-	// std::map<std::string, IS_FolderList>::iterator it = list.begin();
+	directoryList.setListing(path.substr(1) + "/");
+	std::map<std::string, IS_FolderList> list = directoryList.getListing();
+	std::map<std::string, IS_FolderList>::iterator it = list.begin();
 	std::ifstream file("front/directoryList.html", std::ios::binary);
 	if (!file.is_open())
 	{
@@ -44,16 +38,28 @@ std::string HTTPResponse::buildDirectoryList(std::string path) {
 	std::string placeholder = "<!-- INSERT HERE -->";
 	size_t pos = content.find(placeholder);
 	if (pos == std::string::npos)
-	{
-		//faut catch et renvoyer une erreur 500 mais il est 7h du mat j'ai trop la flemme aled
 		throw std::runtime_error("Internal Server Error: template missing placeholder");
+	std::ostringstream templates;
+	for(; it != list.end(); ++it)
+	{
+		templates << "<div class=\"directory-row\">";
+		templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
+		templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
+		templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
+		templates << "</div>";
 	}
-	content.erase(pos, placeholder.length());
-	//j'insere mon html dynamiquement
-	//faut faire une fonction build 
-	//directoryHTML et build la response de la requete ici
-	//flemme la
+	content.replace(pos, placeholder.length(), templates.str());
 	return (content);
+};
+
+std::string HTTPResponse::buildDirectoryList(std::string path) {
+	std::string htmlBody = buildDirectoryListHtml(path);
+	std::ostringstream response;
+	response << "HTTP/1.1 200 Created\r\n";
+	response << "Content-Length: " << htmlBody.size() << "\r\n";
+	response << "Connection: close\r\n\r\n";
+	response << htmlBody;
+	return (response.str());
 };
 
 std::string HTTPResponse::buildResponse() {
@@ -68,7 +74,8 @@ std::string HTTPResponse::buildResponse() {
 
 std::string HTTPResponse::buildPost() {
 		std::ostringstream oss;
-		oss << "HTTP/1.1 201 Created\r\n";
+		oss << "HTTP/1.1 303 See other\r\n";
+		oss << "Location: /\r\n";
 		oss << "Content-Length: 0\r\n";
 		oss << "Connection: close\r\n\r\n";
 		return oss.str();
@@ -76,6 +83,8 @@ std::string HTTPResponse::buildPost() {
 
 
 std::string HTTPResponse::buildGet(std::string filename) {
+	if (utils::isFile(filename.substr(1)))
+		filename = filename.substr(1);
 	std::ifstream file(filename.c_str(), std::ios::binary);
 	if (!file.is_open())
 	{
@@ -96,6 +105,7 @@ std::string HTTPResponse::buildGet(std::string filename) {
 	oss << "Connection: close\r\n\r\n";
 	oss<< file.rdbuf();
 	file.close();
+	std::cout << oss.str() << std::endl;
 	return oss.str();
 }
 

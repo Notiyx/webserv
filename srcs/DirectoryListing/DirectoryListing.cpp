@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DirectoryListing.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 17:34:23 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 18:32:04 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:31:26 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ void    DirectoryListing::setListing(const std::string &path) {
             this->listing[filePath].setLastEdit(formatTime);
         }
     }
-    for (std::map<std::string, IS_FolderList>::iterator it = this->listing.begin(); it != this->listing.end(); ++it) {
-        std::cout << "[" << it->second.getFolderName() << "]" << " : " << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << " " << it->second.getFolderLastEdit() << std::endl; 
-    }
+    // for (std::map<std::string, IS_FolderList>::iterator it = this->listing.begin(); it != this->listing.end(); ++it) {
+    //     std::cout << "[" << it->second.getFolderName() << "]" << " : " << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << " " << it->second.getFolderLastEdit() << std::endl; 
+    // }
 }
 
 std::map<std::string, IS_FolderList> DirectoryListing::getListing() {

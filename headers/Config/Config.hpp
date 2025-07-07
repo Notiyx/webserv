@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 17:49:45 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 20:07:22 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ class Config {
         std::size_t     getMaxClients();
         std::string     getServName();
         bool            isLocation(std::string key);
-        std::map<std::string, IS_Location>::iterator    getLocation(std::string key);
+        std::map<std::string, IS_Location>::iterator  locationEnd();
+		std::map<std::string, IS_Location>::iterator  getBestLocation(const std::string &path);
+        std::map<std::string, IS_Location>::iterator     getLocation(std::string key);
         ~Config();
 };
