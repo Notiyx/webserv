@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 17:49:45 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 18:14:19 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ class Config {
         std::string     getHostAndPort();
         std::string     getHostName();
         std::size_t     getMaxClients();
+        std::map<std::string, IS_ErrorPage> getErrorPage();
+        std::string     getSpecificErrorPage(int code);
         std::string     getServName();
         bool            isLocation(std::string key);
         std::map<std::string, IS_Location>::iterator    getLocation(std::string key);

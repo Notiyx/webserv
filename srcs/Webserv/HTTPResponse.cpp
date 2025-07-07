@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 07:18:48 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 18:30:33 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 
 HTTPResponse::HTTPResponse() : msg(""), res(0) {};
 
-HTTPResponse::HTTPResponse(int res, std::string msg): msg(msg), res(res) {};
+HTTPResponse::HTTPResponse(int res, std::string msg, Config &conf)
+    : msg(msg), res(res), conf(conf) {}
 
 HTTPResponse::~HTTPResponse() {};
 
@@ -58,12 +59,30 @@ std::string HTTPResponse::buildDirectoryList(std::string path) {
 
 std::string HTTPResponse::buildResponse() {
 	std::stringstream iss;
-	iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
-	iss << "content-Type: text/html\r\n";
-	iss << "connection: close\r\n";
-	iss << "\r\n";
-	iss << "<html><body><h1>" << res << " " << msg << "</h1></body></html>";
-	return iss.str();
+	if (conf.getSpecificErrorPage(res).size() > 0) {
+		std::ifstream file(conf.getSpecificErrorPage(res).c_str());
+		iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
+		iss << "content-Type: text/html\r\n";
+		iss << "connection: close\r\n";
+		iss << "\r\n";
+		if (!file.is_open())
+		{
+			iss << "<html><body><h1>" << res << " " << msg << "</h1></body></html>";	
+			return (iss.str());
+		}
+		std::string valueRead;
+		while (std::getline(file, valueRead)) {
+			iss << valueRead << "\r\n";
+		}
+		return (iss.str());
+	} else {
+		iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
+		iss << "content-Type: text/html\r\n";
+		iss << "connection: close\r\n";
+		iss << "\r\n";
+		iss << "<html><body><h1>" << res << " " << msg << "</h1></body></html>";	
+	}
+	return (iss.str());
 }
 
 std::string HTTPResponse::buildPost() {

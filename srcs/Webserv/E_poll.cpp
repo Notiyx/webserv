@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:58:07 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/06 18:11:44 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		request.append(buffer, bytes);
 		readed += bytes;
 		if (readed > 50000000) {
-			HTTPResponse error(413, "Payload Too Large");
+			HTTPResponse error(413, "Payload Too Large", this->conf);
 			try {
 				error.send(client_fd);
 			} catch (const fdError &e) {
@@ -93,7 +93,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 			request.append(buffer, bytes);
 			if (request.size() > 50000000)
 			{
-				HTTPResponse error(413, "Payload Too Large");
+				HTTPResponse error(413, "Payload Too Large", this->conf);
 				try {
 					error.send(client_fd);
 				} catch (const fdError &e) {
@@ -108,7 +108,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	std::string method, path, version;
 	iss >> method >> path >> version;
 	if (method.empty() || path.empty() || version.empty() || version != "HTTP/1.1") {
-		HTTPResponse error(400, "Bad Request");
+		HTTPResponse error(400, "Bad Request", this->conf);
 		try {
 			error.send(client_fd);
 		} catch (const fdError &e) {
@@ -119,7 +119,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	}
 	if (method != "GET" && method != "POST" && method != "DELETE")
 	{
-		HTTPResponse error(405, "Method Not Allowed");
+		HTTPResponse error(405, "Method Not Allowed", this->conf);
 		try {
 			error.send(client_fd);
 		} catch (const fdError &e) {
@@ -130,7 +130,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	}
 	if (!conf.isLocation(path))
 	{
-		HTTPResponse error(404, "Not Found");
+		HTTPResponse error(404, "Not Found", this->conf);
 		try {
 			error.send(client_fd);
 		} catch (const fdError &e) {
@@ -144,7 +144,7 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		(method == "POST" && !location->second.getLocationPostMethod()) ||
 		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
 	{
-		HTTPResponse error(405, "Method not Allowed");
+		HTTPResponse error(405, "Method not Allowed", this->conf);
 		try {
 			error.send(client_fd);
 		} catch (const fdError &e) {

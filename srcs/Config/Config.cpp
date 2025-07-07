@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 16:14:24 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/06 18:30:47 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,20 @@ std::string Config::getHostAndPort() {
 
 std::map<std::string, IS_Location>::iterator    Config::getLocation(std::string key) {
     return (this->location.find(key));
-};
+}
 
+
+std::map<std::string, IS_ErrorPage> Config::getErrorPage() {
+    return (this->errorPage);
+}
+
+std::string Config::getSpecificErrorPage(int code) {
+    std::map<std::string, IS_ErrorPage>::iterator ite = this->errorPage.end();
+    for (std::map<std::string, IS_ErrorPage>::iterator it = this->errorPage.begin(); it != ite; ++it) {
+        if (it->second.getErrorCode() == code)
+            return (it->second.getErrorPath());
+    }
+    return ("");
+}
 
 Config::~Config() {}

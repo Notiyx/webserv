@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 17:58:18 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/06 18:10:50 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void Request::parse(std::string request) {
 };
 
 void Request::sendError(int code, std::string msg) {
-	HTTPResponse error(code, msg);
+	HTTPResponse error(code, msg, conf);
 	try {
 		error.send(client_fd);
 	} catch (const fdError &e) {
