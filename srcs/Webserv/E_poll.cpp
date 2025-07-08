@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/07 21:53:09 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/08 08:17:30 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,9 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 	}
 	size_t end_header = request.find("\r\n\r\n");
 	std::string headers = request.substr(0, end_header);
-	
+	bool isChunked = false;
+	if (headers.find("Transfer-Encoding: chunked") != std::string::npos)
+		isChunked = true;
 	size_t pos = headers.find("Content-Length");
 	if (pos != std::string::npos)
 	{
@@ -81,7 +83,31 @@ bool E_poll::isValidRequest(int client_fd, std::string &request) {
 		length = std::atoi(length_str.c_str());
 		contentLength = true;
 	}
-	if (contentLength) {
+if (isChunked)
+{
+	while (request.find("0\r\n\r\n", end_header) == std::string::npos)
+	{
+		bytes = read(client_fd, buffer, sizeof(buffer));
+		if (bytes <= 0)
+		{
+			throw std::runtime_error("Error: read failed on chunked body");
+			delete [] buffer;
+			return (false);
+		}
+		request.append(buffer, bytes);
+		if (request.size() > 50000000)
+		{
+			HTTPResponse error(413, "Payload Too Large", this->conf);
+			try {
+				error.send(client_fd);
+			} catch (const fdError &e) {
+				std::cerr << e.what() << std::endl;
+			}
+			delete [] buffer;
+			return (false);
+		}
+	}
+	} else if (contentLength) {
 		size_t total = end_header + 4 + length;
 		while (request.size() < total) 
 		{
@@ -164,8 +190,18 @@ void E_poll::LaunchRequest(int client_fd, std::string& request) {
 		return ;
 	Request req(request, conf, client_fd);
 	req.parseHeader();
-	if (req.getMethod() == "POST")
-		req.parseBody();
+	if (req.getMethod() == "POST" && !req.getChunk())
+	{
+		if(!req.parseBody())
+		{
+			close(client_fd);
+			return ;
+		}
+	}
+	if (req.getChunk())
+	{
+		req.unChunk();
+	}
 	req.execute();
 };
 
@@ -195,7 +231,6 @@ void E_poll::epollExec(int serv_fd) {
 				bool valid = isValidRequest(fd, request);
 				if(valid)
 				{
-					std::cout << "JE PASSE ICI" << std::endl;
 					LaunchRequest(fd, request);
 				}
 				else
