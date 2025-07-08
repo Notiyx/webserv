@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:09:37 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/07 08:15:17 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/08 02:16:13 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,8 @@ class CGI {
 		const std::map<std::string, std::string>& header);
 		~CGI();
 		void buildEnv();
-		void execCGI();
+		void childCGI(int fd[2]);
+		void childPostCGI(int pipe_post[2]);
+		std::string dadCGI(int fd[2], pid_t pid, int *ActivCGI);
+		std::string execCGI();
 };

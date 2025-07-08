@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/07 21:38:41 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/08 01:07:50 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ std::string HTTPResponse::buildResponse() {
 		while (std::getline(file, valueRead)) {
 			iss << valueRead << "\r\n";
 		}
+		file.close();
 		return (iss.str());
 	} else {
 		iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
@@ -100,6 +101,15 @@ std::string HTTPResponse::buildPost() {
 		return oss.str();
 };
 
+std::string HTTPResponse::buildCGI(std::string bodyCGI) {
+	std::ostringstream oss;
+	oss << "HTTP/1.1 200 OK\r\n";
+	oss << "Content-Type: text/html\r\n";
+	oss << "Content-Length: " << bodyCGI.size() << "\r\n";
+	oss << "Connection: close\r\n\r\n";
+	oss << bodyCGI;
+	return oss.str();
+};
 
 std::string HTTPResponse::buildGet(std::string filename) {
 	if (utils::isFile(filename.substr(1)))
@@ -122,12 +132,10 @@ std::string HTTPResponse::buildGet(std::string filename) {
 	file.seekg(0, std::ios::beg);
 	oss << "Content-Length: " << length << "\r\n";
 	oss << "Connection: close\r\n\r\n";
-	oss<< file.rdbuf();
+	oss << file.rdbuf();
 	file.close();
-	std::cout << oss.str() << std::endl;
 	return oss.str();
 }
-
 
 void HTTPResponse::send(int client_fd) {
 		std::string res = buildResponse();

@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 18:10:50 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/08 08:39:21 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void Request::parse(std::string request) {
 		std::string meth;
 		std::string line;
 		this->isCGI = false;
+		this->isChunked = false;
 		iss >> meth >> this->path;
 		pathCGI();
 		if (meth == "GET")
@@ -87,6 +88,10 @@ void Request::parse(std::string request) {
 				}
 			} else
 				std::getline(issl, content);
+			if (line.find("Transfer-Encoding") != std::string::npos && line.find("chunked") != std::string::npos)
+			{
+				this->isChunked = true;
+			}
 			key = utils::trim(key);
 			content = utils::trim(content);
 			header.insert(std::make_pair(key, content));
@@ -97,7 +102,7 @@ void Request::parse(std::string request) {
 			sendError(400, "Bad request");
 			return ;
 		} 
-		if (header.find("Content-Length") != header.end())
+		if (header.find("Content-Length") != header.end() || this->isChunked)
 		{
 			size_t length = std::atoi(header["Content-Length"].c_str());
 			body = request.substr(pos + 4);
@@ -170,10 +175,15 @@ std::string Request::getMethod() {
 		return (NULL);
 };
 
-void Request::parseBody() {
+bool Request::parseBody() {
 	std::string delimiteur = boundary;
 	std::string end_delimiteur = "--" + boundary + "--";
 	size_t pos = 0;
+	if (body.empty() || body == "\n")
+	{
+		sendError(400, "Bad Request");
+		return (false);
+	}
 	while ((pos = body.find(delimiteur, pos)) != std::string::npos)
 	{
 		pos += delimiteur.length();
@@ -191,14 +201,16 @@ void Request::parseBody() {
 			break ;
 		pos = next;
 	}
+	return (true);
 };
 
 
 void Request::parseHeader() {
 	bool ishost = false;
-	for(std::map<std::string, std::string>::iterator it = header.begin(); it != header.end(); ++it)
+	std::cout << body << std::endl;
+	for(std::map<std::string, std::string>::iterator it = this->header.begin(); it != this->header.end(); ++it)
 	{
-		if ((method == GET || method == DELETE) && !body.empty())
+		if ((this->method == GET || this->method == DELETE) && !body.empty())
 		{
 			sendError(400, "Bad Request");
 			return ;
@@ -212,10 +224,9 @@ void Request::parseHeader() {
 				return ;
 			}
 		}
-		if (method == POST && it->first == "Content-Length")
+		if (this->method == POST && it->first == "Content-Length")
 		{
 			size_t size = std::atoi(it->second.c_str());
-			//faut cast mieux mais il est tard
 			if (size > static_cast<size_t>(50000000) || size > static_cast<size_t>(std::numeric_limits<int>::max()))
 			{
 				sendError(413, "Payload Too Large");
@@ -227,7 +238,7 @@ void Request::parseHeader() {
 				return ;
 			}
 		}
-		if (method == POST && it->first == "Content-Type")
+		if (this->method == POST && it->first == "Content-Type")
 		{
 			if (it->second != "application/x-www-form-urlencoded"
 				&& (it->second.find("multipart/form-data;") == std::string::npos))
@@ -240,6 +251,7 @@ void Request::parseHeader() {
 				return ;
 			}
 		}
+
 	}
 	if (!ishost) {
 		sendError(400, "Bad Request");
@@ -299,11 +311,11 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 			sendError(400, "Bad Request: Invalid filename");
 			return (false);
 		}
-		std::string uniqueFilename = getUniqueFilename("front/uploads", part.filename);
+		std::string uniqueFilename = getUniqueFilename(uploadPath, part.filename);
 		std::string fullpath = uploadPath + "/" + uniqueFilename;
 		struct stat st;
-		if (stat("front/uploads", &st) == -1)
-			mkdir("front/uploads", 0755);
+		if (stat(uploadPath.c_str(), &st) == -1)
+			mkdir(uploadPath.c_str(), 0755);
 		std::ofstream file(fullpath.c_str(), std::ios::binary);
 		if (!file.is_open()) 
 		{
@@ -331,6 +343,34 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 	return (true);
 };
 
+bool	Request::unChunk() {
+	std::string newBody;
+	std::string hexa;
+
+	header.erase("Transfer-Encoding");
+	while(!body.empty())
+	{
+		size_t end_line = body.find("\r\n");
+		if (end_line == std::string::npos)
+		return (false);
+		hexa = body.substr(0, end_line);
+		body.erase(0, end_line + 2);
+		char *fail;
+		long size = std::strtol(hexa.c_str(), &fail, 16);
+		if (*fail != '\0' || size < 0)
+			return (false);
+		if (size == 0)
+			break ;
+		if (body.size() < static_cast<size_t>(size + 2))
+			return (false);
+		newBody.append(body, 0, size);
+		if (body[size] != '\r' || body[size + 1] != '\n')
+			return (false);
+		body.erase(0, size + 2);
+	}
+	body = newBody;
+	return (true);
+};
 
 bool Request::executePost(std::string filename) {
 	std::ofstream file(filename.c_str(), std::ios::out | std::ios::app);
@@ -369,7 +409,6 @@ std::string Request::deleteFiles(std::string filename) {
 	}
 	if (access(filename.c_str(), F_OK) != 0) 
 	{
-		std::cout << "path: |" << filename <<  "|" << std::endl;
 		sendError(404, "File Not Found");
 		return (NULL);
 	}
@@ -381,6 +420,9 @@ std::string Request::deleteFiles(std::string filename) {
 	return("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");
 };
 
+bool Request::getChunk() {
+	return(this->isChunked);
+};
 
 void Request::execute() {
 	HTTPResponse valid;
@@ -388,35 +430,37 @@ void Request::execute() {
 	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(path);
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
-	std::cerr << "Request method: " << method << ", path: " << this->path << std::endl;
 	if (method == DELETE)
 		root += "/uploads";
 	std::string fullpath = pathManager(root, path);
 	if (this->isCGI)
 	{
+
 		try {
-		CGI cgi(getMethod(), path, body, path_info, query_string, conf, header);
-		cgi.execCGI();
+			CGI cgi(getMethod(), path, body, path_info, query_string, conf, header);
+			body = cgi.execCGI();
+			res = valid.buildCGI(body);
+		std::cout << res << std::endl;
 		} catch (std::runtime_error& e) { sendError(500, e.what()); return ;}
 	}
 		if (method == GET)
 	{
 		std::cout << "GET" << std::endl;
-		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)))
+		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)) && !this->isCGI)
 		{
 			try {
-				res = valid.buildDirectoryList(fullpath); 
+				res = valid.buildDirectoryList(fullpath);
 			}
 			catch (const std::runtime_error& e) { sendError(500, "Internal Server Error"); }
-		} else if (utils::isFile(fullpath.substr(1)))
+		} else if (utils::isFile(fullpath.substr(1)) && !this->isCGI)
 			res = valid.buildGet(fullpath);
-		else
+		else if (!this->isCGI)
 		{
 			fullpath += index;
 			res = valid.buildGet(fullpath);
 		}
-	} else if (method == POST) {
-
+	} else if (method == POST) 
+	{
 		if (getContentType() == "application/x-www-form-urlencoded")
 		{
 			std::cout << "POST" << std::endl;
@@ -424,7 +468,7 @@ void Request::execute() {
 			if (!executePost(fullpath))
 				return ;
 		}
-		else if (getContentType().find("multipart/form-data") != std::string::npos)
+		else if (getContentType().find("multipart/form-data") != std::string::npos && !this->isCGI)
 		{
 			std::cout << "UPLOAD" << std::endl;
 			std::vector<data>::iterator part = bodyParts.begin();

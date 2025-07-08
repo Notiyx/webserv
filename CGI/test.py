@@ -17,17 +17,4 @@ print(f"<p>Méthode HTTP : {method}</p>")
 query = os.environ.get("QUERY_STRING", "")
 print(f"<p>Query string : {query}</p>")
 
-# Traiter POST
-if method == "POST":
-    form = cgi.FieldStorage()
-    print("<h2>Données POST reçues :</h2>")
-    if not form:
-        print("<p>Aucune donnée POST reçue</p>")
-    else:
-        print("<ul>")
-        for key in form.keys():
-            value = form.getvalue(key)
-            print(f"<li>{key} = {value}</li>")
-        print("</ul>")
-
 print("</body></html>")

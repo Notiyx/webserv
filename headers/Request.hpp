@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/07 07:37:14 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/08 06:39:49 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,21 @@ class Request {
 		std::string query_string;
 		std::vector<std::string> env;
 		bool 		isCGI;
+		bool		isChunked;
 		void parse(std::string request);
 	public:
 		Request(std::string request, Config conf, int client_fd);
 		~Request();
 		void pathCGI();
 		void parseHeader();
+		bool unChunk();
 		void parseBodyPart(std::string part);
-		void parseBody();
+		bool parseBody();
 		void sendError(int code, std::string msg);
 		std::string pathManager(const std::string& root, const std::string& path);
 		void execute();
 		std::string getContentType();
+		bool getChunk();
 		std::string getMethod();
 		bool executePost(std::string filename);
 		bool executeUpload(data part, std::string uploadPath);

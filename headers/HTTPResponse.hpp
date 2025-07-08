@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:36 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 18:21:20 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/08 00:20:17 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,6 @@ class HTTPResponse {
 		std::string buildDirectoryListHtml(std::string path);
 		std::string buildGet(std::string filename);
 		std::string buildPost();
+		std::string buildCGI(std::string bodyCGI);
 		void send(int client_fd);
 };
