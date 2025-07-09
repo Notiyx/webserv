@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Setter.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 03:42:38 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:51:52 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,10 @@ void    IS_Location::setMethodAllow(const char *types, const bool &value) {
         this->methodsAllow.setPostMethod(value);
     if (compare == "DELETE")
         this->methodsAllow.setDeleteMethod(value);
+}
+
+void    IS_Location::setRedirectData(const int code, const std::string &path) {
+    this->redirectData[code] = path;
 }
 
 void    IS_MethodsAllow::setGetMethod(const bool &value) {

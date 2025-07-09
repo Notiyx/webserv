@@ -28,9 +28,12 @@ class IS_Location : public I_Location
         void    setUploadPath(const std::string &path);
         void    setUploadEnable(const bool &value);
         void    setMethodAllow(const char *types, const bool &value);
+        void    setRedirectData(const int code, const std::string &path);
         std::string getRoot();
         std::string getIndex();
         std::string getUploadPath();
+        std::string getPathRedirect();
+        int         getCodeRedirect();
         bool        getDirectoryListing();
         bool        getUploadEnable();
         bool    getLocationGetMethod();

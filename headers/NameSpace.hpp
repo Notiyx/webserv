@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 19:14:28 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:42:28 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ namespace parsingFunction
     IS_Listen   findListen(std::istream &infile);
     IS_Host   findHost(std::istream &infile);
     std::string findServerName(std::istream &infile);
+    std::string findDefaultRoot(std::istream &infile);
+    std::string findDefaultIndex(std::istream &infile);
     std::size_t findMaxClientRequest(std::istream &infile);
     std::map<std::string, IS_Location> findLocation(std::istream &infile);
     std::map<std::string, IS_ErrorPage> findErrorPage(std::istream &infile);

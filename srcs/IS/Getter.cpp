@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Getter.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 23:01:17 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:12:19 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,24 @@ std::string    IS_Location::getIndex() {
 
 std::string     IS_Location::getUploadPath() {
     return (this->uploadPath);
+}
+
+int IS_Location::getCodeRedirect() {
+    std::map<int, std::string>::iterator ite = this->redirectData.end();
+    for (std::map<int, std::string>::iterator it = this->redirectData.begin(); it != ite; ++it) {
+        if (it->first >= 0)
+            return (it->first);
+    }
+    return (-1);
+}
+
+std::string IS_Location::getPathRedirect() {
+    std::map<int, std::string>::iterator ite = this->redirectData.end();
+    for (std::map<int, std::string>::iterator it = this->redirectData.begin(); it != ite; ++it) {
+        if (it->second.size() > 0)
+            return (it->second);
+    }
+    return ("");
 }
 
 bool    IS_Location::getDirectoryListing() {
@@ -40,6 +58,7 @@ bool    IS_Location::getLocationPostMethod() {
 bool    IS_Location::getLocationDeleteMethod() {
     return (this->methodsAllow.getDeleteMethod());
 }
+
 
 bool    IS_MethodsAllow::getGetMethod() {
     return (this->GET);

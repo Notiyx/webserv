@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:36:56 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 07:11:07 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:13:02 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int main(int ac, char **av) {
     }
     webserv.setConfig(conf);
     try {
-        std::cout << utils::getDateCurrent() << std::endl;
         webserv.setupServ();
         webserv.launchServ();
     } catch (const fdError &e) {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 01:45:58 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:44:38 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 class Config {
     private:
         std::string serverName;
+        std::string default_root;
+        std::string default_index;
         std::size_t clientMaxRequest;
         IS_Host host;
         IS_Listen listen;
@@ -36,6 +38,8 @@ class Config {
         int             getPort();
         std::string     getHostAndPort();
         std::string     getHostName();
+        std::string getDefaultRoot();
+        std::string getDefaultIndex();
         std::size_t     getMaxClients();
         std::map<std::string, IS_ErrorPage> getErrorPage();
         std::string     getSpecificErrorPage(int code);
