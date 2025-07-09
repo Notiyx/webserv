@@ -6,6 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/09 21:37:49 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/09 20:55:42 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -186,16 +187,9 @@ void E_poll::epollExec(int serv_fd) {
 				if (client.getComplete())
 				{
 					if(isValidRequest(fd, client))
-					{
 						launchRequest(fd, client);
-						client_map.erase(fd);
-						close(fd);
-					}
-					else
-					{
-						client_map.erase(fd);
-						close(fd);
-					}
+					client_map.erase(fd);
+					close(fd);
 				}
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
