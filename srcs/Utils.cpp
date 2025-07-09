@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 19:13:20 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:39:37 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void    configUtils::checkValidString(std::istream &infile) {
         if (valueRead.find("location") == std::string::npos && valueRead.find("listen") == std::string::npos &&
             valueRead.find("host") == std::string::npos && valueRead.find("server_name") == std::string::npos &&
             valueRead.find("client_max_body_size") == std::string::npos && valueRead.find("error_page") == std::string::npos
-            && valueRead != "}")
+            && valueRead != "}" && valueRead.find("default_root") == std::string::npos && valueRead.find("default_index") == std::string::npos)
         {
             oss << "Error in default config : unknow keywords '" << valueRead << "' at line " << line << " !";
             std::string error(oss.str());

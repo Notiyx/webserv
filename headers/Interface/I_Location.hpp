@@ -6,14 +6,14 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 04:53:14 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/02 03:09:19 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:50:28 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <iostream>
-#include <vector>
+#include <map>
 #include <IS_MethodsAllow.hpp>
 
 class IS_MethodsAllow;
@@ -27,6 +27,7 @@ class I_Location
         bool        directoryListing;
         bool        uploadEnable;
         IS_MethodsAllow methodsAllow;
+        std::map<int, std::string> redirectData;
     public:
         virtual ~I_Location() = 0;
 };

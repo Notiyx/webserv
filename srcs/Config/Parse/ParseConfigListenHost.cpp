@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 15:34:17 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:42:20 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,80 @@ std::string parsingFunction::findServerName(std::istream &infile) {
     infile.clear();
     infile.seekg(0, std::ios::beg);
     return (serverName);
+}
+
+std::string parsingFunction::findDefaultRoot(std::istream &infile) {
+    int       line = 0;
+    bool      alreadySet = false;
+    std::string valueRead;
+    std::string defaultRoot;
+    std::ostringstream oss;
+
+    while (std::getline(infile, valueRead)) {
+        if (valueRead.find("default_root ") == std::string::npos)
+            continue;
+        if (alreadySet)
+            throw (ConfigFileError("Error DefaultRoot: Multiple defintion for server_name !"));
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+        if (valueRead.find(";") == std::string::npos)
+        {
+            oss << "Error DefaultRoot : no find ';' in end of line at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+        if (valueRead.find(";") != valueRead.size() - 1)
+        {
+            oss << "Error DefaultRoot : ';' pas bien placer at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+        valueRead = valueRead.substr(14);
+        valueRead = valueRead.substr(0, valueRead.size() - 1);
+        defaultRoot = valueRead;
+        alreadySet = true;
+    }
+    if (!alreadySet)
+        throw (ConfigFileError("Error DefaultRoot: No DefaultRoot set in config !"));
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
+    return (defaultRoot);
+}
+
+std::string parsingFunction::findDefaultIndex(std::istream &infile) {
+    int       line = 0;
+    bool      alreadySet = false;
+    std::string valueRead;
+    std::string defaultIndex;
+    std::ostringstream oss;
+
+    while (std::getline(infile, valueRead)) {
+        if (valueRead.find("default_index ") == std::string::npos)
+            continue;
+        if (alreadySet)
+            throw (ConfigFileError("Error DefaultIndex: Multiple defintion for server_name !"));
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+        if (valueRead.find(";") == std::string::npos)
+        {
+            oss << "Error DefaultIndex : no find ';' in end of line at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+        if (valueRead.find(";") != valueRead.size() - 1)
+        {
+            oss << "Error DefaultIndex : ';' pas bien placer at line " << line << " !";
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
+        valueRead = valueRead.substr(14);
+        valueRead = valueRead.substr(0, valueRead.size() - 1);
+        defaultIndex = valueRead;
+        alreadySet = true;
+    }
+    if (!alreadySet)
+        throw (ConfigFileError("Error DefaultIndex: No DefaultIndex set in config !"));
+    infile.clear();
+    infile.seekg(0, std::ios::beg);
+    return (defaultIndex);
 }
 
 std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
