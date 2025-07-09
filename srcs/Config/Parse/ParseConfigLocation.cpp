@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 06:35:59 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 20:12:53 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/09 20:49:52 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,6 +336,11 @@ std::map<std::string, IS_Location> parsingFunction::findLocation(std::istream &i
             defaultLoc = findDataLoc(infile, lines);   
         } catch (const ConfigFileError &e) {
             throw (ConfigFileError(e));
+        }
+        if (loc.find(path) != loc.end()) {
+            conv << "Error Location: Multiple definition for the same location : " << path << " at line " << lines << " !";
+            std::string error(conv.str());
+            throw (ConfigFileError(error.c_str()));
         }
         loc[path] = defaultLoc;
     }

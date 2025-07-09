@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:48:10 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/05 16:12:04 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:54:29 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Webserv.hpp>
 #include <E_poll.hpp>
+#include <csignal>
+
+bool g_servOn = false;
 
 Webserv::Webserv() {}
 
@@ -19,12 +22,19 @@ void    Webserv::setConfig(const Config newConf) {
     this->conf = newConf;
 }
 
+void signal_handler(int code) {
+    (void) code;
+    g_servOn = false;
+}
+
 void Webserv::launchServ() {
     std::cout << "server: " << conf.getServName() << " launched. Port: " << conf.getPort() << std::endl;
     E_poll poll(conf);
     poll.epollInit(serv_fd);
+    signal(SIGINT, signal_handler);
+    g_servOn = true;
     try {
-        while (true)
+        while (g_servOn)
             poll.epollExec(serv_fd);
     } catch (const fdError& e) {
         std::cerr << e.what() << std::endl;
