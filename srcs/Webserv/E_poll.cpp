@@ -7,6 +7,7 @@
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
 /*   Updated: 2025/07/09 03:58:54 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/08 08:17:30 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,10 +182,7 @@ void E_poll::epollExec(int serv_fd) {
 				}
 				
 				if(isValidRequest(fd, client))
-				{
-					std::cout << "ouais ouais ouais" << std::endl;
 					launchRequest(fd, client);
-				}
 				else
 					close(fd);
 			} catch (const std::runtime_error& e) {
