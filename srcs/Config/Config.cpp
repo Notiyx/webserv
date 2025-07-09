@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 01:45:55 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:06:40 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ void    Config::parseConfig(const char *av) {
         this->host = parsingFunction::findHost(infile);
         this->serverName = parsingFunction::findServerName(infile);
         this->clientMaxRequest = parsingFunction::findMaxClientRequest(infile);
+        this->default_root = parsingFunction::findDefaultRoot(infile);
+        this->default_index = parsingFunction::findDefaultIndex(infile);
         this->errorPage = parsingFunction::findErrorPage(infile);
         this->location = parsingFunction::findLocation(infile);
         //this->printConfig(strFile);
@@ -75,6 +77,8 @@ void    Config::printConfig(const std::string strFile) {
             std::cout << it->second.getLocationGetMethod() << " --> GET Method " << std::endl;
             std::cout << it->second.getLocationPostMethod() << " --> POST Method " << std::endl;
             std::cout << it->second.getLocationDeleteMethod() << " --> DELETE Method " << std::endl;
+            std::cout << it->second.getCodeRedirect() << " --> Code REDIRECT" << std::endl;
+            std::cout << it->second.getPathRedirect() << " --> Path REDIRECT" << std::endl;
         }
         std::cout << "-----------------------ERROR PAGE-----------------------" << std::endl;
         for (std::map<std::string, IS_ErrorPage>::iterator it = this->errorPage.begin(); it != this->errorPage.end(); ++it) {
@@ -90,6 +94,8 @@ Config  &Config::operator=(const Config &conf) {
     {
         this->serverName = conf.serverName;
         this->clientMaxRequest = conf.clientMaxRequest;
+        this->default_index = conf.default_index;
+        this->default_root  = conf.default_root;
         this->errorPage.insert(conf.errorPage.begin(), conf.errorPage.end());
         this->host = conf.host;
         this->listen = conf.listen;
@@ -103,11 +109,19 @@ int     Config::getPort(){
 };
 
 std::string     Config::getServName(){
-    return (serverName);
+    return (this->serverName);
+};
+
+std::string     Config::getDefaultIndex(){
+    return (this->default_index);
+};
+
+std::string     Config::getDefaultRoot(){
+    return (this->default_root);
 };
 
 std::size_t    Config::getMaxClients(){
-    return (clientMaxRequest);
+    return (this->clientMaxRequest);
 };
 
 bool    Config::isLocation(const std::string key) {
