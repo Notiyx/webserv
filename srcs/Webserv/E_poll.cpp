@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 21:37:49 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/09 20:55:42 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/10 00:56:38 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 
 #include <E_poll.hpp>
@@ -140,7 +140,6 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 
 bool E_poll::launchRequest(int client_fd, IS_Client &client) {
 	Request req(client, conf, client_fd);
-	//std::cout << "request: " << client.getBuffer() << std::endl;
 	req.parseHeader();
 	if (req.getMethod() == "POST" && !req.getChunk())
 	{
@@ -182,20 +181,24 @@ void E_poll::epollExec(int serv_fd) {
 				{
 					client_map.erase(fd);
 					close(fd);
-					return ;
+					continue ;
 				}
 				if (client.getComplete())
 				{
 					if(isValidRequest(fd, client))
+					{
 						launchRequest(fd, client);
+					}
 					client_map.erase(fd);
 					close(fd);
 				}
+				else
+					continue ;
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
 				client_map.erase(fd);
 				close(fd);
-				return ;
+				continue ;
 			}
 		}
 		else if (events[i].events & EPOLLOUT)

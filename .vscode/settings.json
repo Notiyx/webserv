@@ -52,7 +52,8 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "csignal": "cpp"
     },
     "livePreview.defaultPreviewPath": "/front/404.html"
 }
