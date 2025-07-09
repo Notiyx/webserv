@@ -1,29 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Interface.hpp                                      :+:      :+:    :+:   */
+/*   I_Client.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/01 05:22:20 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 21:48:17 by nmetais          ###   ########.fr       */
+/*   Created: 2025/07/08 21:46:50 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/08 23:36:38 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+#include <iostream>
 
-#include <I_Location.hpp>
-#include <I_MethodsAllow.hpp>
-#include <I_ErrorPage.hpp>
-#include <I_Listen.hpp>
-#include <I_Client.hpp>
-#include <I_Host.hpp>
-#include <I_FolderList.hpp>
-
-class I_Location;
-class I_MethodsAllow;
-class I_ErrorPage;
-class I_Listen;
-class I_Host;
-class I_FolderList;
-class I_Client;
+class I_Client {
+	protected:
+		std::string buffer;
+		bool 		isHeader;
+		bool 		isChunked;
+		size_t 		content_length;
+    public:
+        virtual ~I_Client() = 0;
+};

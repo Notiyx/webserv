@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:25:11 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/06 19:32:01 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 03:41:07 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <iostream>
 #include <AllException.hpp>
 #include <HTTPResponse.hpp>
+#include <InstanceInterface.hpp>
 #include <Config.hpp>
 #include <sys/epoll.h>
 #include <string.h>
@@ -21,16 +22,19 @@
 #include <vector>
 #include <unistd.h>
 
+
 class E_poll {
 	private:
+		std::map<int, IS_Client> client_map;
 		int		epoll_fd;
         Config  conf;
 	public:
 		E_poll(Config conf);
 		~E_poll();
+		bool readClient(int client_fd, IS_Client &client);
 		void epollInit(int serv_fd);
 		void epollExec(int serv_fd);
-		bool isValidRequest(int client_fd, std::string &request);
-		void LaunchRequest(int client_fd, std::string& request);
-		void sendError(int code, std::string msg);
+		bool isValidRequest(int client_fd, IS_Client &client);
+		void launchRequest(int client_fd, IS_Client &client);
+		void sendError(int client_fd, int code, const std::string &msg);
 };
