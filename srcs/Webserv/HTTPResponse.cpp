@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 21:36:30 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 22:41:39 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,41 @@ HTTPResponse::HTTPResponse(int res, std::string msg, Config &conf)
     : msg(msg), res(res), conf(conf) {}
 
 HTTPResponse::~HTTPResponse() {};
+
+static std::string chooseMsg(int code) {
+	std::string msg;
+	switch (code){
+		case 300:
+			msg = " Multiple Choices";
+			break ;
+		case 301:
+			msg = " Moved Permanently";
+			break ;
+		case 302:
+			msg = " Found";
+			break ;
+		case 303:
+			msg = " See Other";
+			break ;
+		case 307:
+			msg = " Temporary Redirect";
+			break ;
+		case 308:
+			msg = " Permanent Redirect";
+			break ;
+	}
+	return (msg);
+};
+
+std::string HTTPResponse::redirect(int redirectCode, std::string url){
+	std::ostringstream oss;
+	std::string redirectmsg = chooseMsg(redirectCode);
+	oss << "HTTP/1.1 " << redirectCode << " " << redirectmsg << "\r\n";
+    oss << "Location: " << url << "\r\n";
+    oss << "Content-Length: 0\r\n\r\n";
+	return (oss.str());
+};
+
 
 std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	DirectoryListing directoryList;
@@ -47,8 +82,6 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	for(; it != list.end(); ++it)
 	{
 		templates << "<div class=\"directory-row\">";
-		std::cout << "path: " << path << std::endl;
-		std::cout << "path: " << path << std::endl;
 		templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
 		templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
 		templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
