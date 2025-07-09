@@ -6,10 +6,10 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 03:38:58 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/08 08:39:21 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:24:11 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include <Request.hpp>
 
@@ -25,7 +25,6 @@ void Request::pathCGI() {
 		return ;
 	this->isCGI = true;
 	posExt += 3;
-	
 	size_t posQuery = path.find('?');
 	
 	std::string before_query;
@@ -52,6 +51,7 @@ void Request::pathCGI() {
 
 void Request::parse(IS_Client &client) {
 		std::istringstream iss(client.getBuffer());
+		std::istringstream pss(client.getBuffer());
 		std::string meth;
 		std::string line;
 		this->isCGI = false;
@@ -318,7 +318,7 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		if (stat(uploadPath.c_str(), &st) == -1)
 			mkdir(uploadPath.c_str(), 0755);
 		std::ofstream file(fullpath.c_str(), std::ios::binary);
-		if (!file.is_open()) 
+		if (!file.is_open())
 		{
 			sendError(500, "Internal Server Error");
 			close(client_fd);
@@ -441,7 +441,6 @@ void Request::execute() {
 			CGI cgi(getMethod(), path, body, path_info, query_string, conf, header);
 			body = cgi.execCGI();
 			res = valid.buildCGI(body);
-		std::cout << res << std::endl;
 		} catch (std::runtime_error& e) { sendError(500, e.what()); return ;}
 	}
 		if (method == GET)

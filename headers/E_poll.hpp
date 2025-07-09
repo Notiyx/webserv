@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:25:11 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 03:41:07 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:45:17 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,6 @@ class E_poll {
 		void epollInit(int serv_fd);
 		void epollExec(int serv_fd);
 		bool isValidRequest(int client_fd, IS_Client &client);
-		void launchRequest(int client_fd, IS_Client &client);
+		bool launchRequest(int client_fd, IS_Client &client);
 		void sendError(int client_fd, int code, const std::string &msg);
 };

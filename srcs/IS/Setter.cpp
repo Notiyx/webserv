@@ -6,6 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
+/*   Updated: 2025/07/09 19:39:45 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/09 19:51:52 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -100,22 +101,26 @@ void    IS_FolderList::setFolderSuffix(const std::string &suffix) {
     this->suffix = suffix;
 }
 
-size_t    IS_Client::setLength(size_t content_length) {
-    return(this->content_length = content_length);
+void    IS_Client::setLength(size_t content_length) {
+    this->content_length = content_length;
 }
 
-bool    IS_Client::setHeader(bool isHeader) {
-    return (this->isHeader = isHeader);
+void    IS_Client::setHeader(bool isHeader) {
+    this->isHeader = isHeader;
 }
 
-bool    IS_Client::setChunk(bool isChunk) {
-    return (this->isChunked = isChunk);
+void    IS_Client::setChunk(bool isChunk) {
+    this->isChunked = isChunk;
 }
 
-std::string IS_Client::setBuffer(std::string buffer) {
-    return (this->buffer = buffer);
+void IS_Client::setBuffer(std::string buffer) {
+    this->buffer = buffer;
 }
 
-std::string IS_Client::appendBuffer(const char *data, size_t size) {
-    return (this->buffer.append(data, size));
+void IS_Client::appendBuffer(const char *data, size_t size) {
+    this->buffer.append(data, size);
+};
+
+void IS_Client::setComplete(bool complete) {
+    this->complete = complete;
 };
