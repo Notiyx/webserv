@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   E_poll.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 20:16:08 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:55:42 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@
 
 E_poll::E_poll(Config conf) : epoll_fd(-1), conf(conf){};
 
-E_poll::~E_poll() {};
+E_poll::~E_poll() {
+	if (epoll_fd > -1)
+		close(epoll_fd);
+};
 
 void E_poll::sendError(int client_fd, int code, const std::string &msg) {
     HTTPResponse error(code, msg, this->conf);

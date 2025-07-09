@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:35:47 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/04 19:21:47 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:52:34 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <streambuf>
-
 
 class Config;
 class Exception;
