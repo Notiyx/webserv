@@ -6,10 +6,10 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/08 20:24:11 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/08 01:07:50 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 21:36:30 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include <HTTPResponse.hpp>
 
@@ -42,15 +42,14 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	if (pos == std::string::npos)
 		throw std::runtime_error("Internal Server Error: template missing placeholder");
 	std::ostringstream templates;
+	if (!path.empty() && path[path.size() - 1] == '/')
+		path = path.substr(0, path.size() - 1);
 	for(; it != list.end(); ++it)
 	{
 		templates << "<div class=\"directory-row\">";
 		std::cout << "path: " << path << std::endl;
 		std::cout << "path: " << path << std::endl;
-		if (path == "/")
-			templates << "<div class=\"directory-name\"><a href=\"index.html\">" << "</a></div>";
-		else
-			templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
+		templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
 		templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
 		templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
 		templates << "</div>";

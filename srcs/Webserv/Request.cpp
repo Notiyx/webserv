@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 20:24:11 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 21:39:21 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void Request::pathCGI() {
 
 void Request::parse(IS_Client &client) {
 		std::istringstream iss(client.getBuffer());
-		std::istringstream pss(client.getBuffer());
 		std::string meth;
 		std::string line;
 		this->isCGI = false;
