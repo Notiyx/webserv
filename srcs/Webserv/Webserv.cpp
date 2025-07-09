@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:48:10 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 20:54:29 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/09 20:55:21 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 bool g_servOn = false;
 
-Webserv::Webserv() {}
+Webserv::Webserv() : serv_fd(-1) {}
 
 void    Webserv::setConfig(const Config newConf) {
     this->conf = newConf;
@@ -63,5 +63,8 @@ void Webserv::setupServ() {
     utils::check_syscall(listen(serv_fd, SOMAXCONN), "listen");
 };
 
-Webserv::~Webserv() {}
+Webserv::~Webserv() {
+    if (this->serv_fd > -1)
+        close(this->serv_fd);
+}
 
