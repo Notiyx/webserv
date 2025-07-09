@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:36:16 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 23:09:42 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:55:36 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,11 @@ IS_Host::~IS_Host() {}
 IS_FolderList::IS_FolderList() {}
 IS_FolderList::~IS_FolderList() {}
 
-IS_Client::IS_Client(){}
+IS_Client::IS_Client(){
+	buffer.clear();
+	isHeader = false;
+	isChunked = false;
+	complete = false;
+	content_length = 0;
+}
 IS_Client::~IS_Client() {}

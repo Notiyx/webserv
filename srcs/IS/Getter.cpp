@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/08 23:01:17 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 19:40:12 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,4 +108,8 @@ bool IS_Client::getChunk() {
 
 size_t IS_Client::getLength() {
     return (this->content_length);
+}
+
+bool IS_Client::getComplete() {
+    return (this->complete);
 }

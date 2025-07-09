@@ -6,10 +6,10 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 03:58:54 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/08 08:17:30 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 20:16:08 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include <E_poll.hpp>
 #include <NameSpace.hpp>
@@ -80,12 +80,12 @@ bool	E_poll::readClient(int client_fd, IS_Client &client) {
 		if (client.getChunk())
 		{
 			if (client.getBuffer().find("0\r\n\r\n", body_start) != std::string::npos)
-				return (true);
+				client.setComplete(true);
 		}
 		else if (client.getBuffer().size() >= body_start + client.getLength())
-			return (true);
+				client.setComplete(true);
 	}
-	return (false);
+	return (true);
 };
 
 bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
@@ -134,22 +134,21 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 	return (true);
 };
 
-void E_poll::launchRequest(int client_fd, IS_Client &client) {
+bool E_poll::launchRequest(int client_fd, IS_Client &client) {
 	Request req(client, conf, client_fd);
+	//std::cout << "request: " << client.getBuffer() << std::endl;
 	req.parseHeader();
 	if (req.getMethod() == "POST" && !req.getChunk())
 	{
 		if(!req.parseBody())
-		{
-			close(client_fd);
-			return ;
-		}
+			return (false);
 	}
 	if (req.getChunk())
 	{
 		req.unChunk();
 	}
 	req.execute();
+	return (true);
 };
 
 
@@ -177,16 +176,27 @@ void E_poll::epollExec(int serv_fd) {
 				IS_Client &client = client_map[fd];
 				if (!readClient(fd, client))
 				{
+					client_map.erase(fd);
 					close(fd);
 					return ;
 				}
-				
-				if(isValidRequest(fd, client))
-					launchRequest(fd, client);
-				else
-					close(fd);
+				if (client.getComplete())
+				{
+					if(isValidRequest(fd, client))
+					{
+						launchRequest(fd, client);
+						client_map.erase(fd);
+						close(fd);
+					}
+					else
+					{
+						client_map.erase(fd);
+						close(fd);
+					}
+				}
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
+				client_map.erase(fd);
 				close(fd);
 				return ;
 			}
