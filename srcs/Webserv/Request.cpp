@@ -6,14 +6,15 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/09 03:38:58 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/08 08:39:21 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Request.hpp>
 
-Request::Request(std::string request, Config conf, int client_fd) : conf(conf), client_fd(client_fd) {
-	parse(request);
+Request::Request(IS_Client &client, Config conf, int client_fd) : conf(conf), client_fd(client_fd) {
+	parse(client);
 };
 
 Request::~Request() {};
@@ -49,8 +50,8 @@ void Request::pathCGI() {
 	this->query_string = query_string;
 };
 
-void Request::parse(std::string request) {
-		std::istringstream iss(request);
+void Request::parse(IS_Client &client) {
+		std::istringstream iss(client.getBuffer());
 		std::string meth;
 		std::string line;
 		this->isCGI = false;
@@ -96,7 +97,7 @@ void Request::parse(std::string request) {
 			content = utils::trim(content);
 			header.insert(std::make_pair(key, content));
 		}
-		size_t pos = request.find("\r\n\r\n");
+		size_t pos = client.getBuffer().find("\r\n\r\n");
 		if (pos == std::string::npos)
 		{
 			sendError(400, "Bad request");
@@ -105,7 +106,7 @@ void Request::parse(std::string request) {
 		if (header.find("Content-Length") != header.end() || this->isChunked)
 		{
 			size_t length = std::atoi(header["Content-Length"].c_str());
-			body = request.substr(pos + 4);
+			body = client.getBuffer().substr(pos + 4);
 			if (body.size() < length)
 			{
 				sendError(431, "Body too short");
@@ -117,7 +118,7 @@ void Request::parse(std::string request) {
 void Request::sendError(int code, std::string msg) {
 	HTTPResponse error(code, msg, conf);
 	try {
-		error.send(client_fd);
+		error.send(this->client_fd);
 	} catch (const fdError &e) {
 		std::cerr << e.what() << std::endl;
 		return ;
@@ -352,7 +353,7 @@ bool	Request::unChunk() {
 	{
 		size_t end_line = body.find("\r\n");
 		if (end_line == std::string::npos)
-		return (false);
+			return (false);
 		hexa = body.substr(0, end_line);
 		body.erase(0, end_line + 2);
 		char *fail;

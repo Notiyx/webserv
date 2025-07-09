@@ -6,6 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/09 03:58:54 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/08 08:17:30 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -19,6 +20,15 @@ E_poll::E_poll(Config conf) : epoll_fd(-1), conf(conf){};
 
 E_poll::~E_poll() {};
 
+void E_poll::sendError(int client_fd, int code, const std::string &msg) {
+    HTTPResponse error(code, msg, this->conf);
+    try {
+        error.send(client_fd);
+    } catch (const fdError &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
 void E_poll::epollInit(int serv_fd) {
 	struct epoll_event event;
 	epoll_fd = epoll_create1(0);
@@ -31,164 +41,101 @@ void E_poll::epollInit(int serv_fd) {
 		throw std::runtime_error("Error: epoll_ctl");
 };
 
-
-
-bool E_poll::isValidRequest(int client_fd, std::string &request) {
-	std::string req;
-	char* buffer;
-	try {
-	    buffer = new char[50000000];
-	}
-	catch (const std::bad_alloc& e) {
-	    std::cerr << "Erreur d'allocation mémoire : " << e.what() << std::endl;
+bool	E_poll::readClient(int client_fd, IS_Client &client) {
+	char buffer[4096];
+	int  bytes = read(client_fd, buffer, sizeof(buffer));
+	if (bytes <= 0)
 		return (false);
-	}
-	int	 readed = 0;
-	int  bytes;
-	bool contentLength = false;
-	int  length = 0;
-	while (request.find("\r\n\r\n") == std::string::npos)
+	client.appendBuffer(buffer, bytes);
+	//Client valid headers + Content-Length recup + Chunked request detect
+	if (!client.getHeader())
 	{
-		bytes = read(client_fd, buffer, sizeof(buffer));
-		if (bytes <= 0)
+		size_t pos = client.getBuffer().find("\r\n\r\n");
+		if (pos != std::string::npos)
 		{
-			throw std::runtime_error("Error : read failed");
-			delete [] buffer;
-			return (false);
-		}
-		request.append(buffer, bytes);
-		readed += bytes;
-		if (readed > 50000000) {
-			HTTPResponse error(413, "Payload Too Large", this->conf);
-			try {
-				error.send(client_fd);
-			} catch (const fdError &e) {
-				std::cerr << e.what() << std::endl;
-			}
-			delete [] buffer;
-			return (false);
-		}
-	}
-	size_t end_header = request.find("\r\n\r\n");
-	std::string headers = request.substr(0, end_header);
-	bool isChunked = false;
-	if (headers.find("Transfer-Encoding: chunked") != std::string::npos)
-		isChunked = true;
-	size_t pos = headers.find("Content-Length");
-	if (pos != std::string::npos)
-	{
-		size_t start = headers.find_first_not_of(" ", pos + 15);
-		size_t end = headers.find("\r\n", start);
-		std::string length_str = headers.substr(start, end - start);
-		length = std::atoi(length_str.c_str());
-		contentLength = true;
-	}
-if (isChunked)
-{
-	while (request.find("0\r\n\r\n", end_header) == std::string::npos)
-	{
-		bytes = read(client_fd, buffer, sizeof(buffer));
-		if (bytes <= 0)
-		{
-			throw std::runtime_error("Error: read failed on chunked body");
-			delete [] buffer;
-			return (false);
-		}
-		request.append(buffer, bytes);
-		if (request.size() > 50000000)
-		{
-			HTTPResponse error(413, "Payload Too Large", this->conf);
-			try {
-				error.send(client_fd);
-			} catch (const fdError &e) {
-				std::cerr << e.what() << std::endl;
-			}
-			delete [] buffer;
-			return (false);
-		}
-	}
-	} else if (contentLength) {
-		size_t total = end_header + 4 + length;
-		while (request.size() < total) 
-		{
-			bytes = read(client_fd, buffer, sizeof(buffer));
-			if (bytes <= 0)
+			client.setHeader(true);
+			std::string headers = client.getBuffer().substr(0, pos + 4);
+			size_t cont_pos = headers.find("Transfer-Encoding:");
+			if (cont_pos != std::string::npos)
 			{
-				throw std::runtime_error("Error: read failed on body");
-				delete [] buffer;
-				return (false);
+				cont_pos = headers.find("chunked", cont_pos);
+				if (cont_pos != std::string::npos)
+					client.setChunk(true);
 			}
-			request.append(buffer, bytes);
-			if (request.size() > 50000000)
+			cont_pos = headers.find("Content-Length:");
+			if (cont_pos != std::string::npos)
 			{
-				HTTPResponse error(413, "Payload Too Large", this->conf);
-				try {
-					error.send(client_fd);
-				} catch (const fdError &e) {
-					std::cerr << e.what() << std::endl;
-				}
-				delete [] buffer;
-				return (false);
+				size_t start = headers.find_first_of("0123456789", cont_pos);
+				size_t end = headers.find("\r\n", start);
+				int len = std::atoi(headers.substr(start, end -start).c_str());
+				client.setLength(len);
 			}
+			else
+				client.setLength(0);
 		}
 	}
-	std::istringstream iss(request);
+	//Body type detect + end read detect
+	if (client.getHeader()) {
+		size_t body_start = client.getBuffer().find("\r\n\r\n") + 4;
+		if (client.getChunk())
+		{
+			if (client.getBuffer().find("0\r\n\r\n", body_start) != std::string::npos)
+				return (true);
+		}
+		else if (client.getBuffer().size() >= body_start + client.getLength())
+			return (true);
+	}
+	return (false);
+};
+
+bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
+	std::istringstream iss(client.getBuffer());
 	std::string method, path, version;
 	iss >> method >> path >> version;
 	if (method.empty() || path.empty() || version.empty() || version != "HTTP/1.1") {
-		HTTPResponse error(400, "Bad Request", this->conf);
-		try {
-			error.send(client_fd);
-		} catch (const fdError &e) {
-			std::cerr << e.what() << std::endl;
-		}
-		delete [] buffer;
+		sendError(client_fd, 401, "Bad Request");
 		return (false);
 	}
 	if (method != "GET" && method != "POST" && method != "DELETE")
 	{
-		HTTPResponse error(405, "Method Not Allowed", this->conf);
-		try {
-			error.send(client_fd);
-		} catch (const fdError &e) {
-			std::cerr << e.what() << std::endl;
-		}
-		delete [] buffer;
+		sendError(client_fd, 405, "Method Not Allowed");
+		return (false);
+	}
+	std::string line;
+	std::string empty;
+	bool host = false;
+	bool length = false;
+	std::getline(iss, empty);
+	while(std::getline(iss, line) && line != "\r")
+	{
+		if (line.find("Host:") != std::string::npos)
+			host = true;
+		if (line.find("Content-Length:") != std::string::npos)
+			length = true;
+	}
+	if (!host || (length && client.getChunk()))
+	{
+		sendError(client_fd, 402, "Bad Request");
 		return (false);
 	}
 	std::map<std::string, IS_Location>::iterator  location = conf.getBestLocation(path);
 	if (location == conf.locationEnd())
 	{
-		HTTPResponse error(404, "Not Found", this->conf);
-		try {
-			error.send(client_fd);
-		} catch (const fdError &e) {
-			std::cerr << e.what() << std::endl;
-		}
-		delete [] buffer;
+		sendError(client_fd, 404, "Not Found");
 		return (false);
 	}
 	if ((method == "GET" && !location->second.getLocationGetMethod()) ||
 		(method == "POST" && !location->second.getLocationPostMethod()) ||
 		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
 	{
-		HTTPResponse error(405, "Method not Allowed", this->conf);
-		try {
-			error.send(client_fd);
-		} catch (const fdError &e) {
-			std::cerr << e.what() << std::endl;
-		}
-		delete [] buffer;
+		sendError(client_fd, 405, "Method Not Allowed");
 		return (false);
 	}
-	delete [] buffer;
 	return (true);
 };
 
-void E_poll::LaunchRequest(int client_fd, std::string& request) {
-	if (request.empty())
-		return ;
-	Request req(request, conf, client_fd);
+void E_poll::launchRequest(int client_fd, IS_Client &client) {
+	Request req(client, conf, client_fd);
 	req.parseHeader();
 	if (req.getMethod() == "POST" && !req.getChunk())
 	{
@@ -227,12 +174,15 @@ void E_poll::epollExec(int serv_fd) {
 		else if (events[i].events & EPOLLIN)
 		{
 			try {
-				std::string request;
-				bool valid = isValidRequest(fd, request);
-				if(valid)
+				IS_Client &client = client_map[fd];
+				if (!readClient(fd, client))
 				{
-					LaunchRequest(fd, request);
+					close(fd);
+					return ;
 				}
+				
+				if(isValidRequest(fd, client))
+					launchRequest(fd, client);
 				else
 					close(fd);
 			} catch (const std::runtime_error& e) {

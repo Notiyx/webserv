@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 20:07:31 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/09 03:42:38 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,3 +95,23 @@ void    IS_FolderList::setLastEdit(const std::string &time) {
 void    IS_FolderList::setFolderSuffix(const std::string &suffix) {
     this->suffix = suffix;
 }
+
+size_t    IS_Client::setLength(size_t content_length) {
+    return(this->content_length = content_length);
+}
+
+bool    IS_Client::setHeader(bool isHeader) {
+    return (this->isHeader = isHeader);
+}
+
+bool    IS_Client::setChunk(bool isChunk) {
+    return (this->isChunked = isChunk);
+}
+
+std::string IS_Client::setBuffer(std::string buffer) {
+    return (this->buffer = buffer);
+}
+
+std::string IS_Client::appendBuffer(const char *data, size_t size) {
+    return (this->buffer.append(data, size));
+};

@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/06 20:05:36 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/08 23:01:17 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,31 @@ int         IS_ErrorPage::getErrorCode() {
 std::string IS_FolderList::getFolderName() {
     return (this->folderMame);
 }
+
 double IS_FolderList::getFolderSize() {
     return (this->folderSize);
 }
+
 std::string IS_FolderList::getFolderLastEdit() {
     return (this->lastEdit);
 }
 
 std::string IS_FolderList::getFolderSuffix() {
     return (this->suffix);
+}
+
+std::string IS_Client::getBuffer() {
+    return (this->buffer);
+}
+
+bool IS_Client::getHeader() {
+    return (this->isHeader);
+}
+
+bool IS_Client::getChunk() {
+    return (this->isChunked);
+}
+
+size_t IS_Client::getLength() {
+    return (this->content_length);
 }

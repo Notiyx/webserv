@@ -6,6 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/08 20:24:11 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/08 01:07:50 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -44,7 +45,12 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	for(; it != list.end(); ++it)
 	{
 		templates << "<div class=\"directory-row\">";
-		templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
+		std::cout << "path: " << path << std::endl;
+		std::cout << "path: " << path << std::endl;
+		if (path == "/")
+			templates << "<div class=\"directory-name\"><a href=\"index.html\">" << "</a></div>";
+		else
+			templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
 		templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
 		templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
 		templates << "</div>";

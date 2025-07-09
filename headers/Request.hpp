@@ -6,6 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
+/*   Updated: 2025/07/09 03:37:20 by nmetais          ###   ########.fr       */
 /*   Updated: 2025/07/08 06:39:49 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -48,9 +49,9 @@ class Request {
 		std::vector<std::string> env;
 		bool 		isCGI;
 		bool		isChunked;
-		void parse(std::string request);
+		void parse(IS_Client &client);
 	public:
-		Request(std::string request, Config conf, int client_fd);
+		Request(IS_Client &client, Config conf, int client_fd);
 		~Request();
 		void pathCGI();
 		void parseHeader();
