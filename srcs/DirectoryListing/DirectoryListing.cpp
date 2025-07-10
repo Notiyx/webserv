@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DirectoryListing.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 17:34:23 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 21:36:42 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/10 19:14:09 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,7 @@ void    DirectoryListing::setListing(const std::string &path) {
             this->listing[filePath].setLastEdit(formatTime);
         }
     }
-    // for (std::map<std::string, IS_FolderList>::iterator it = this->listing.begin(); it != this->listing.end(); ++it) {
-    //     std::cout << "[" << it->second.getFolderName() << "]" << " : " << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << " " << it->second.getFolderLastEdit() << std::endl; 
-    // }
+    closedir(dir);
 }
 
 std::map<std::string, IS_FolderList> DirectoryListing::getListing() {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 22:41:39 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/10 19:12:58 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 		oss << "HTTP/1.1 404 Not Found\r\n";
         oss << "Content-Length: 0\r\n";
         oss << "Connection: close\r\n\r\n";
+		file.close();
         return oss.str();
 	}
 	std::stringstream buffer;
@@ -75,7 +76,10 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	std::string placeholder = "<!-- INSERT HERE -->";
 	size_t pos = content.find(placeholder);
 	if (pos == std::string::npos)
+	{
+		file.close();
 		throw std::runtime_error("Internal Server Error: template missing placeholder");
+	}
 	std::ostringstream templates;
 	if (!path.empty() && path[path.size() - 1] == '/')
 		path = path.substr(0, path.size() - 1);
@@ -88,6 +92,7 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 		templates << "</div>";
 	}
 	content.replace(pos, placeholder.length(), templates.str());
+	file.close();
 	return (content);
 };
 
