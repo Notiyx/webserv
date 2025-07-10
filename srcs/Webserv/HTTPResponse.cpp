@@ -20,6 +20,41 @@ HTTPResponse::HTTPResponse(int res, std::string msg, Config &conf)
 
 HTTPResponse::~HTTPResponse() {};
 
+static std::string chooseMsg(int code) {
+	std::string msg;
+	switch (code){
+		case 300:
+			msg = " Multiple Choices";
+			break ;
+		case 301:
+			msg = " Moved Permanently";
+			break ;
+		case 302:
+			msg = " Found";
+			break ;
+		case 303:
+			msg = " See Other";
+			break ;
+		case 307:
+			msg = " Temporary Redirect";
+			break ;
+		case 308:
+			msg = " Permanent Redirect";
+			break ;
+	}
+	return (msg);
+};
+
+std::string HTTPResponse::redirect(int redirectCode, std::string url){
+	std::ostringstream oss;
+	std::string redirectmsg = chooseMsg(redirectCode);
+	oss << "HTTP/1.1 " << redirectCode << " " << redirectmsg << "\r\n";
+    oss << "Location: " << url << "\r\n";
+    oss << "Content-Length: 0\r\n\r\n";
+	return (oss.str());
+};
+
+
 std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	DirectoryListing directoryList;
 	directoryList.setListing(path.substr(1) + "/");

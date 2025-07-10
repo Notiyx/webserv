@@ -329,6 +329,10 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		std::map<std::string, IS_Location>::iterator  it = conf.getLocation(path);
 		std::string root = it->second.getRoot();
 		std::string index = it->second.getIndex();
+		if (root.empty())
+			root = conf.getDefaultRoot();
+		if (index.empty())
+			index = conf.getDefaultIndex();
 		std::string fullpath = root + "/" + index;
 		std::ofstream file(fullpath.c_str(), std::ios::out | std::ios::app);
 		if (!file.is_open()) {
@@ -423,18 +427,44 @@ bool Request::getChunk() {
 	return(this->isChunked);
 };
 
+static bool pathExists(const std::string& path) {
+    struct stat sb;
+    return (stat(path.c_str(), &sb) == 0);
+}
+
 void Request::execute() {
 	HTTPResponse valid;
 	std::string res;
 	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(path);
+	if (!pathExists(path)) {
+		sendError(404, "Not Found");
+        return ;
+    }
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
+	if (root.empty())
+		root = conf.getDefaultRoot();
+	if (index.empty())
+		index = conf.getDefaultIndex();
 	if (method == DELETE)
 		root += "/uploads";
 	std::string fullpath = pathManager(root, path);
+	int redirectCode = it->second.getCodeRedirect();
+	if (redirectCode != -1)
+	{
+		std::string url = it->second.getPathRedirect();
+		if (url.size() == 0)
+		{
+			sendError(400, "Bad Request");
+			return ;
+		}
+		std::cout << "REDIRECT" << std::endl;
+		res = valid.redirect(redirectCode, url);
+		utils::sender(client_fd, res);
+		return ;
+	}
 	if (this->isCGI)
 	{
-
 		try {
 			CGI cgi(getMethod(), path, body, path_info, query_string, conf, header);
 			body = cgi.execCGI();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigLocation.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 06:35:59 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 20:49:52 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/09 23:00:55 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,13 +168,20 @@ static  int getCodeReturn(std::string valueRead, const char *keywords, const int
         std::string error(oss.str());
         throw (ConfigFileError(error.c_str()));
     }
-    if (std::atoi(valueRead.c_str()) < 0)
+    int code = std::atoi(valueRead.c_str());
+    if (code < 0)
     {
         oss << "Error Location: " << keywords << " attributs code must be a positive numbers at line " << line << " !";
         std::string error(oss.str());
         throw (ConfigFileError(error.c_str()));
     }
-    return (std::atoi(valueRead.c_str()));
+    if (code <  300 || code > 308 || code == 304 || code == 305 || code == 306)
+    {
+        oss << "Error Location: " << keywords << " redirection code must be one of 300, 301, 302, 303, 307, or 308 at line " << line << " !";
+        std::string error(oss.str());
+        throw (ConfigFileError(error.c_str()));
+    }
+    return (code);
 }
 
 static  std::string getPathReturn(std::string valueRead, const char *keywords, const int sizeKeywords, const int line) {
@@ -211,7 +218,8 @@ static  std::string getPathReturn(std::string valueRead, const char *keywords, c
         std::string error(oss.str());
         throw (ConfigFileError(error.c_str()));
     }
-    valueRead = valueRead.substr(valueRead.size() - 1);
+    valueRead = valueRead.substr(0, valueRead.size() - 1);
+    std::cout << valueRead << std::endl;
     return (valueRead);
 }
 
