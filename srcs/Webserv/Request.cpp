@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/10 19:11:10 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/10 19:24:18 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -427,19 +427,10 @@ bool Request::getChunk() {
 	return(this->isChunked);
 };
 
-static bool pathExists(const std::string& path) {
-    struct stat sb;
-    return (stat(path.c_str(), &sb) == 0);
-}
-
 void Request::execute() {
 	HTTPResponse valid;
 	std::string res;
 	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(path);
-	if (!pathExists(path)) {
-		sendError(404, "Not Found");
-        return ;
-    }
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
 	if (root.empty())
@@ -473,6 +464,8 @@ void Request::execute() {
 	}
 		if (method == GET)
 	{
+		std::cout << "GET" << std::endl;
+
 		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)) && !this->isCGI)
 		{
 			try {

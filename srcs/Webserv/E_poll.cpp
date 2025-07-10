@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/10 00:56:38 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/10 19:23:05 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ bool E_poll::launchRequest(int client_fd, IS_Client &client) {
 	if (req.getMethod() == "POST" && !req.getChunk())
 	{
 		if(!req.parseBody())
-			return (false);
+		return (false);
 	}
 	if (req.getChunk())
 	{
