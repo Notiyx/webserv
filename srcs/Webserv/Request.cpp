@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 21:39:21 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/10 19:11:10 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,6 @@ bool Request::parseBody() {
 
 void Request::parseHeader() {
 	bool ishost = false;
-	std::cout << body << std::endl;
 	for(std::map<std::string, std::string>::iterator it = this->header.begin(); it != this->header.end(); ++it)
 	{
 		if ((this->method == GET || this->method == DELETE) && !body.empty())
@@ -444,7 +443,6 @@ void Request::execute() {
 	}
 		if (method == GET)
 	{
-		std::cout << "GET" << std::endl;
 		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)) && !this->isCGI)
 		{
 			try {
@@ -462,14 +460,12 @@ void Request::execute() {
 	{
 		if (getContentType() == "application/x-www-form-urlencoded")
 		{
-			std::cout << "POST" << std::endl;
 			res = valid.buildPost();
 			if (!executePost(fullpath))
 				return ;
 		}
 		else if (getContentType().find("multipart/form-data") != std::string::npos && !this->isCGI)
 		{
-			std::cout << "UPLOAD" << std::endl;
 			std::vector<data>::iterator part = bodyParts.begin();
 			for(; part != bodyParts.end(); ++part)
 			{
@@ -479,7 +475,6 @@ void Request::execute() {
 			res = valid.buildPost();
 		}
 	} else if (method == DELETE) {
-		std::cout << "DELETE" << std::endl;
 		res = deleteFiles(fullpath);
 	}else {
 		sendError(405, "Method Not Allowed");
