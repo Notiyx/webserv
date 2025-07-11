@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 06:35:59 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 23:00:55 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/10 22:49:33 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,6 @@ static  std::string getPathReturn(std::string valueRead, const char *keywords, c
         throw (ConfigFileError(error.c_str()));
     }
     valueRead = valueRead.substr(0, valueRead.size() - 1);
-    std::cout << valueRead << std::endl;
     return (valueRead);
 }
 
@@ -250,6 +249,8 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("index") != std::string::npos) {
             try {
+                if (Data[6])
+                    throw (ConfigFileError("Error lie au return"));
                 if (Data[1])
                     throw (ConfigFileError("Error Location: multiple definition of index !"));
                 Data[1] = true;
@@ -258,14 +259,20 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("directoryListing") != std::string::npos) {
             try {
+                if (Data[6])
+                    throw (ConfigFileError("Error lie au return"));
                 if (Data[2])
                     throw (ConfigFileError("Error Location: multiple definition of directoryListing !"));
                 Data[2] = true;
                 bool values = getBoolLoc(valueRead, "Directory Listing", 16, line);
+                if (values && (Data[0] || Data[1] || Data[3] || Data[4] || Data[5]))
+                    throw (ConfigFileError("Error lie au fait que directorylisting est on"));
                 isloc.setDirectoryListing(values);
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("upload_path") != std::string::npos) {
             try {
+                if (Data[6])
+                    throw (ConfigFileError("Error lie au return"));
                 if (Data[3])
                     throw (ConfigFileError("Error Location: multiple definition of upload_path !"));
                 Data[3] = true;
@@ -274,6 +281,8 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("upload_enabled") != std::string::npos) {
             try {
+                if (Data[6])
+                    throw (ConfigFileError("Error lie au return"));
                 if (Data[4])
                     throw (ConfigFileError("Error Location: multiple definition of upload_enabled !"));
                 Data[4] = true;
@@ -282,6 +291,8 @@ static IS_Location  findDataLoc(std::istream &infile, int line) {
             } catch(const ConfigFileError& e) { throw (ConfigFileError(e));}
         } else if (valueRead.find("allow_methods") != std::string::npos) {
              try {
+                if (Data[6])
+                    throw (ConfigFileError("Error lie au return"));
                 if (Data[5])
                     throw (ConfigFileError("Error Location: multiple definition of allow_methods !"));
                 Data[5] = true;

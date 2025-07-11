@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:44:15 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 19:39:26 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:04:46 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ class IS_Client : public I_Client
 		size_t getLength();
 		bool getComplete();
 		std::string getBuffer();
+		std::string getDir();
+		void setDir(std::string lastDir);
 		void setBuffer(std::string buffer);
 		void setLength(size_t content_length);
 		void setHeader(bool isHeader);

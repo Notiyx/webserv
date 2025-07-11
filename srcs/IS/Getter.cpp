@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/10 00:56:32 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:05:29 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,3 +133,7 @@ size_t IS_Client::getLength() {
 bool IS_Client::getComplete() {
     return (this->complete);
 }
+
+std::string IS_Client::getDir() {
+    return(this->lastDirectoryList);
+};

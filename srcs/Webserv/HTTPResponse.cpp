@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HTTPResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/10 19:12:58 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:12:50 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,17 @@ std::string HTTPResponse::redirect(int redirectCode, std::string url){
 };
 
 
-std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
+std::string HTTPResponse::buildDirectoryListHtml(std::string route, std::string path, std::string root, IS_Client &client) {
 	DirectoryListing directoryList;
-	directoryList.setListing(path.substr(1) + "/");
+	try {
+		std::cout << "setList:" << path << std::endl;
+		client.setDir(path);
+		directoryList.setListing(path + "/");
+	}
+	catch (const DirectoryListError& e)
+	{
+		throw(DirectoryListError(e));
+	}
 	std::map<std::string, IS_FolderList> list = directoryList.getListing();
 	std::map<std::string, IS_FolderList>::iterator it = list.begin();
 	std::ifstream file("front/directoryList.html", std::ios::binary);
@@ -83,12 +91,18 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	std::ostringstream templates;
 	if (!path.empty() && path[path.size() - 1] == '/')
 		path = path.substr(0, path.size() - 1);
+	if (path.compare(0, root.size(), root.c_str()) == 0) {
+		path = path.substr(root.size() + 1);
+	}
 	for(; it != list.end(); ++it)
 	{
 		templates << "<div class=\"directory-row\">";
-		templates << "<div class=\"directory-name\"><a href=\"" << path << "/" << it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
-		templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
-		templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
+		templates << "<div class=\"directory-name\"><a href=\"" << route + "/" + it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
+		if (it != list.begin())
+		{
+			templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
+			templates << "<div class=\"directory-date\">" << it->second.getFolderLastEdit() << "</div>";
+		}
 		templates << "</div>";
 	}
 	content.replace(pos, placeholder.length(), templates.str());
@@ -96,14 +110,19 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string path) {
 	return (content);
 };
 
-std::string HTTPResponse::buildDirectoryList(std::string path) {
-	std::string htmlBody = buildDirectoryListHtml(path);
-	std::ostringstream response;
-	response << "HTTP/1.1 200 Created\r\n";
-	response << "Content-Length: " << htmlBody.size() << "\r\n";
-	response << "Connection: close\r\n\r\n";
-	response << htmlBody;
-	return (response.str());
+std::string HTTPResponse::buildDirectoryList(std::string route, std::string path, std::string root, IS_Client &client) {
+	try {
+		std::string htmlBody = buildDirectoryListHtml(route, path, root, client);
+		std::ostringstream response;
+		response << "HTTP/1.1 200 Created\r\n";
+		response << "Content-Length: " << htmlBody.size() << "\r\n";
+		response << "Connection: close\r\n\r\n";
+		response << htmlBody;
+		return (response.str());
+	} catch (const DirectoryListError& e)
+	{
+		throw(std::runtime_error(e.what()));
+	}
 };
 
 std::string HTTPResponse::buildResponse() {
