@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:43:07 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/10 22:10:31 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:31:27 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,17 @@ class Config {
         int             getPort();
         std::string     getHostAndPort();
         std::string     getHostName();
-        std::string getDefaultRoot();
-        std::string getDefaultIndex();
-        std::size_t     getMaxClients();
+        std::string     getDefaultRoot();
+        std::string     getDefaultIndex();
+        std::size_t     getMaxBodySize();
         std::map<std::string, IS_ErrorPage> getErrorPage();
         std::string     getSpecificErrorPage(int code);
         std::string     getServName();
         bool            isLocation(std::string key);
-        std::map<std::string, IS_Location>::iterator  locationEnd();
-		std::map<std::string, IS_Location>::iterator getDirectoryLocation(std::string& path);
-		std::map<std::string, IS_Location>::iterator  getBestLocation(std::string &path);
-        std::map<std::string, IS_Location>::iterator     getLocation(std::string key);
+        std::map<std::string, IS_Location>::iterator    locationEnd();
+		std::map<std::string, IS_Location>::iterator    getDirectoryLocation(std::string& path);
+		std::map<std::string, IS_Location>::iterator    getBestLocation(std::string &path);
+        std::map<std::string, IS_Location>::iterator    getLocation(std::string key);
+        std::map<std::string, IS_Location>::iterator    getLocationDelete(std::string& path);
         ~Config();
 };

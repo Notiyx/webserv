@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 14:04:05 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 18:53:55 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,5 +126,21 @@ void IS_Client::setComplete(bool complete) {
 };
 
 void IS_Client::setDir(std::string lastDir) {
-    this->lastDirectoryList = lastDir;
+    this->currentDirectoryList = lastDir;
 };
+
+void IS_Client::setOldDir(std::string oldDir) {
+    this->lastDirectoryList = oldDir;
+}
+
+void IS_Client::setEraseData() {
+    this->complete = false;
+    this->buffer.clear();
+    this->isChunked = false;
+    this->isHeader = false;
+    this->content_length = 0;
+}
+
+void IS_Client::setCurrentDirectoryName(const std::string &name) {
+    this->currentDirectoryName = name;
+}

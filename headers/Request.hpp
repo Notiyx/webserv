@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 14:00:12 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:42:45 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Request {
 		Request(IS_Client &client, Config conf, int client_fd);
 		~Request();
 		void pathCGI();
-		void parseHeader();
+		bool parseHeader();
 		bool unChunk();
 		void parseBodyPart(std::string part);
 		bool parseBody();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigListenHost.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 19:42:20 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 21:03:55 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,29 @@ IS_Listen   parsingFunction::findListen(std::istream &infile) {
         if (valueRead.find("listen") == std::string::npos)
             continue ;
         if (alreadySet)
-            throw (ConfigFileError("Error Listen: Multiple defintion for listen !"));
+            throw (ConfigFileError("Error Listen: Multiple listen definition."));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (!isspace(valueRead[6]))
         {
-            oss << "Error Listen: no found space after keywords at line " << line << " !";
+            oss << "Error Listen: spaces not found after keywords at line " << line << " !";
             std::string error(oss.str()); 
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(7);
         if (valueRead.find(":") == std::string::npos) {
-            oss << "Error Listen: caracter ':' missing in listen for separate hostname and port at line " << line << " !";
+            oss << "Error Listen: characters ':' missing separators between hostname and port at line " << line << " !";
             std::string error(oss.str()); 
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error Listen : not found ';' in end of line at line " << line << " !";
+            oss << "Error Listen : ';' not found at the end of line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error Listen : ';' pas bien placer at line " << line << " !";
+            oss << "Error Listen : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
@@ -59,16 +59,24 @@ IS_Listen   parsingFunction::findListen(std::istream &infile) {
         port = port.substr(0, port.size() - 1);
         if (!utils::isOnlyDigit(port.c_str()))
         {
-            oss << "Error Listen : The port of listen must be include only numbers ! (line :" << line << ")";
+            oss << "Error Listen : Listening port must include only numbers ! (line :" << line << ")";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (port.size() > 8) {
-            oss << "Error Listen : The port have max 8 numbers ! (line :" << line << ")";
+            oss << "Error Listen : Max port number is 8 ! (line :" << line << ")";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(0, valueRead.find(";"));
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+        host = utils::removeIsSpaceBetween(host.c_str());
+        if (std::atoi(port.c_str()) > 65535)
+        {
+            oss << "Error in port, the value up 65535 at line " << line;
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
         isl.setListenHostAndPort(valueRead);
         isl.setListenHostname(host);
         isl.setListenPort(std::atoi(port.c_str()));
@@ -95,23 +103,23 @@ IS_Host   parsingFunction::findHost(std::istream &infile) {
         if (valueRead.find("host ") == std::string::npos)
             continue ;
         if (alreadySet)
-            throw (ConfigFileError("Error Host: Multiple defintion for Host !"));
+            throw (ConfigFileError("Error Host: Multiple definition for Host !"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         valueRead = valueRead.substr(5);
         if (valueRead.find(":") == std::string::npos) {
-            oss << "Error Host: caracter ':' missing in listen for separate hostname and port at line " << line << " !";
+            oss << "Error Host: caracter ':' missing separators between hostname and port at line " << line << " !";
             std::string error(oss.str()); 
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error Host : not found ';' in end of line at line " << line << " !";
+            oss << "Error Host : spaces not found after keywords at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error Host : ';' pas bien placer at line " << line << " !";
+            oss << "Error Host : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
@@ -120,16 +128,24 @@ IS_Host   parsingFunction::findHost(std::istream &infile) {
         port = port.substr(0, port.size() - 1);
         if (!utils::isOnlyDigit(port.c_str()))
         {
-            oss << "Error Host : The port of listen must be include only numbers ! (line :" << line << ")";
+            oss << "Error Host : Listening port must include only numbers ! (line :" << line << ")";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (port.size() > 8) {
-            oss << "Error Host : The port have max 8 numbers ! (line :" << line << ")";
+            oss << "Error Host : Max port number is 8 ! (line :" << line << ")";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(0, valueRead.find(";"));
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
+        host = utils::removeIsSpaceBetween(host.c_str());
+        if (std::atoi(port.c_str()) > 65535)
+        {
+            oss << "Error in port, the value up 65535 at line " << line;
+            std::string error(oss.str());
+            throw (ConfigFileError(error.c_str()));
+        }
         ish.setHostAndPort(valueRead);
         ish.setHostname(host);
         ish.setPort(std::atoi(port.c_str()));
@@ -153,22 +169,23 @@ std::string parsingFunction::findServerName(std::istream &infile) {
         if (valueRead.find("server_name ") == std::string::npos)
             continue;
         if (alreadySet)
-            throw (ConfigFileError("Error ServerName: Multiple defintion for server_name !"));
+            throw (ConfigFileError("Error ServerName: Multiple definition for server_name !"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error ServerName : no find ';' in end of line at line " << line << " !";
+            oss << "Error ServerName : no find ';' missing in the end of line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error ServerName : ';' pas bien placer at line " << line << " !";
+            oss << "Error ServerName : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(12);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         serverName = valueRead;
         alreadySet = true;
     }
@@ -190,22 +207,23 @@ std::string parsingFunction::findDefaultRoot(std::istream &infile) {
         if (valueRead.find("default_root ") == std::string::npos)
             continue;
         if (alreadySet)
-            throw (ConfigFileError("Error DefaultRoot: Multiple defintion for server_name !"));
+            throw (ConfigFileError("Error DefaultRoot: Multiple definition for server_name !"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error DefaultRoot : no find ';' in end of line at line " << line << " !";
+            oss << "Error DefaultRoot : no find ';' missing in the end of line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error DefaultRoot : ';' pas bien placer at line " << line << " !";
+            oss << "Error DefaultRoot : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(14);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         defaultRoot = valueRead;
         alreadySet = true;
     }
@@ -227,22 +245,23 @@ std::string parsingFunction::findDefaultIndex(std::istream &infile) {
         if (valueRead.find("default_index ") == std::string::npos)
             continue;
         if (alreadySet)
-            throw (ConfigFileError("Error DefaultIndex: Multiple defintion for server_name !"));
+            throw (ConfigFileError("Error DefaultIndex: Multiple definition for server_name !"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error DefaultIndex : no find ';' in end of line at line " << line << " !";
+            oss << "Error DefaultIndex : ';' is missing at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error DefaultIndex : ';' pas bien placer at line " << line << " !";
+            oss << "Error DefaultIndex : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(14);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         defaultIndex = valueRead;
         alreadySet = true;
     }
@@ -267,17 +286,17 @@ std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
         if (valueRead.find("client_max_body_size") == std::string::npos)
             continue ;
         if (alreadySet)
-            throw (ConfigFileError("Error ClientMaxBodySize: Multiple defintion for client_max_body_size !"));
+            throw (ConfigFileError("Error ClientMaxBodySize: Multiple definition for client_max_body_size !"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error ClientMaxBodySize : no find ';' in end of line at line " << line << " !";
+            oss << "Error ClientMaxBodySize : ';' not found at the end of line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error ClientMaxBodySize : ';' pas bien placer at line " << line << " !";
+            oss << "Error ClientMaxBodySize : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
@@ -286,22 +305,24 @@ std::size_t parsingFunction::findMaxClientRequest(std::istream &infile) {
         multiplicator = valueRead.substr(valueRead.size() - 1);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
         if (valueRead.size() == 0) {
-            oss << "Error ClientMaxBodySize : Il manque un suffix 'm' ou 'M at line " << line << " !";
+            oss << "Error ClientMaxBodySize : Missing suffix at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
+        multiplicator = utils::removeIsSpaceBetween(multiplicator.c_str());
         if (multiplicator == "M")
             multiplicatorN = 1000000;
         if (multiplicator == "m")
             multiplicatorN = 1000;
         if (!utils::isOnlyDigit(valueRead.c_str()))
         {
-            oss << "Error ClientMaxBodySize : The max request size must be include only numbers ! (line :" << line << ")";
+            oss << "Error ClientMaxBodySize : Max Request size must only include numbers ! (line :" << line << ")";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.size() + 8 > 15)
-            throw (ConfigFileError("Error ClientMaxBodySize : Too longer request size plus only < 15 numbers !"));
+            throw (ConfigFileError("Error ClientMaxBodySize : Too long request size don't be rude ! 15 numbers max !"));
         requestSize = std::atol(valueRead.c_str());
         requestSize *= multiplicatorN;
         alreadySet = true;
@@ -326,28 +347,29 @@ std::map<std::string, IS_ErrorPage> parsingFunction::findErrorPage(std::istream 
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         if (valueRead.find(";") == std::string::npos)
         {
-            oss << "Error ErrorPage : no find ';' in end of line at line " << line << " !";
+            oss << "Error ErrorPage : ';' not found at the end of line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         if (valueRead.find(";") != valueRead.size() - 1)
         {
-            oss << "Error ErrorPage : ';' pas bien placer at line " << line << " !";
+            oss << "Error ErrorPage : ';' missplaced at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         valueRead = valueRead.substr(11);
         if (valueRead.find(" ") == std::string::npos) {
-            oss << "Error ErrorPage : no found space for delimit error and path at line " << line << " !";
+            oss << "Error ErrorPage : Space is missing at line " << line << " !";
             std::string error(oss.str());
             throw (ConfigFileError(error.c_str()));
         }
         errorCode = valueRead.substr(0, valueRead.find(" "));
         if (!utils::isOnlyDigit(errorCode.c_str()))
-            throw (ConfigFileError("Error ErrorPage: the error accept only numbers !"));
+            throw (ConfigFileError("Error ErrorPage: i only accept numbers !"));
         isError.setErrorCode(std::atoi(errorCode.c_str()));
         valueRead = valueRead.substr(errorCode.size() + 1);
         valueRead = valueRead.substr(0, valueRead.size() - 1);
+        valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         isError.setErrorPath(valueRead);
         if (errorPage.find(errorCode) != errorPage.end()) {
             oss << "Error ErrorPage : Multiple definition for the same error : " << errorCode << " at line " << line << " !";
