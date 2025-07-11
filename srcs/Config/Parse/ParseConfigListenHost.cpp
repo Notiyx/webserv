@@ -3,16 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigListenHost.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 21:03:55 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 22:12:34 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AllException.hpp>
 #include <NameSpace.hpp>
 #include <cstdlib>
+
+static bool isValidIP(const std::string& ip) {
+    std::istringstream iss(ip);
+    std::string token;
+    int count = 0;
+    while (std::getline(iss, token, '.')) {
+        if (++count > 4)
+            return false;
+        if (token.empty() || token.size() > 3)
+            return false;
+        for (size_t i = 0; i < token.size(); ++i) {
+            if (!std::isdigit(token[i]))
+                return false;
+        }
+        int value = std::atoi(token.c_str());
+        if (value < 0 || value > 255)
+            return false;
+    }
+    return count == 4;
+}
 
 IS_Listen   parsingFunction::findListen(std::istream &infile) {
     IS_Listen isl;
@@ -71,6 +91,15 @@ IS_Listen   parsingFunction::findListen(std::istream &infile) {
         valueRead = valueRead.substr(0, valueRead.find(";"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         host = utils::removeIsSpaceBetween(host.c_str());
+        if (host != "localhost")
+        {
+            if (!isValidIP(host))
+            {
+                oss << "Error Listen : wrong IP address at line " << line << " !";
+                std::string error(oss.str());
+                throw (ConfigFileError(error.c_str()));
+            }
+        }
         if (std::atoi(port.c_str()) > 65535)
         {
             oss << "Error in port, the value up 65535 at line " << line;
@@ -140,6 +169,15 @@ IS_Host   parsingFunction::findHost(std::istream &infile) {
         valueRead = valueRead.substr(0, valueRead.find(";"));
         valueRead = utils::removeIsSpaceBetween(valueRead.c_str());
         host = utils::removeIsSpaceBetween(host.c_str());
+        if (host != "localhost")
+        {
+            if (!isValidIP(host))
+            {
+                oss << "Error Listen : wrong IP address at line " << line << " !";
+                std::string error(oss.str());
+                throw (ConfigFileError(error.c_str()));
+            }
+        }
         if (std::atoi(port.c_str()) > 65535)
         {
             oss << "Error in port, the value up 65535 at line " << line;

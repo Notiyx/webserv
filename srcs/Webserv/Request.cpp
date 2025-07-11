@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 21:48:20 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 22:12:49 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -481,7 +481,6 @@ void Request::execute(IS_Client &client) {
 	}
 	else if (method == GET)
 	{
-		std::cout << utils::getDateCurrent() << " - Get detected" << std::endl;
 		std::string dir = client.getDir();
 		if (it->second.getDirectoryListing() && (dir.empty() || dir != "/"))
 		{
@@ -521,7 +520,6 @@ void Request::execute(IS_Client &client) {
 		}
 	} else if (method == POST) 
 	{
-		std::cout << utils::getDateCurrent() << " - Post detected" << std::endl;
 		if (getContentType() == "application/x-www-form-urlencoded")
 		{
 			res = valid.buildPost();
@@ -539,7 +537,6 @@ void Request::execute(IS_Client &client) {
 			res = valid.buildPost();
 		}
 	} else if (method == DELETE) {
-		std::cout << utils::getDateCurrent() << " - Delete detected" << std::endl;
 		res = deleteFiles(fullpath);
 		if (res.empty())
 			return ;
