@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/10 19:23:05 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 13:59:40 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ bool	E_poll::readClient(int client_fd, IS_Client &client) {
 	return (true);
 };
 
+
 bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 	std::istringstream iss(client.getBuffer());
 	std::string method, path, version;
@@ -122,12 +123,19 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 		sendError(client_fd, 402, "Bad Request");
 		return (false);
 	}
-	std::map<std::string, IS_Location>::iterator  location = conf.getBestLocation(path);
+	std::string savePath = path;
+	std::map<std::string, IS_Location>::iterator locationDirectory = conf.getDirectoryLocation(savePath);
+	std::map<std::string, IS_Location>::iterator  location = conf.getBestLocation(savePath);
+	location = location != this->conf.locationEnd() ? location : locationDirectory;
 	if (location == conf.locationEnd())
 	{
+		std::cout << "test" << std::endl;
 		sendError(client_fd, 404, "Not Found");
 		return (false);
 	}
+	std::cout << "Get: " << location->second.getLocationGetMethod() << std::endl;
+	std::cout << "Post: " << location->second.getLocationPostMethod() << std::endl;
+	std::cout << "location: " << location->first << std::endl;
 	if ((method == "GET" && !location->second.getLocationGetMethod()) ||
 		(method == "POST" && !location->second.getLocationPostMethod()) ||
 		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
@@ -150,7 +158,7 @@ bool E_poll::launchRequest(int client_fd, IS_Client &client) {
 	{
 		req.unChunk();
 	}
-	req.execute();
+	req.execute(client);
 	return (true);
 };
 

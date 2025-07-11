@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/10 00:29:36 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 13:34:08 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,23 +140,46 @@ std::map<std::string, IS_Location>::iterator     Config::getLocation(std::string
     return (this->location.find(key));
 }
 
-std::map<std::string, IS_Location>::iterator  Config::getBestLocation(const std::string &path){
+std::map<std::string, IS_Location>::iterator Config::getDirectoryLocation(std::string& path) {
     std::map<std::string, IS_Location>::iterator comp = location.end();
-    for (std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
+    size_t len = 0;
+    for(std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
     {
-        std::string locationPath = it->first;
-        if (locationPath == "/")
-        {
-            if (path == locationPath)
+        const std::string locpath = it->first;
+        if (path.compare(0, locpath.size(), locpath) == 0 && (path.size() == locpath.size() || path[locpath.size()] == '/' || locpath == "/")) {
+            if (locpath.size() > len) {
                 comp = it;
+                len = locpath.size();
+            }
         }
-        else if (path.compare(0, locationPath.size(), locationPath) == 0)
-        {
-                comp = it;
-        }
+    }
+    if (comp != location.end()) {
+        path = path.substr(comp->first.size());
+        if (path.empty())
+            path = "/";
     }
     return (comp);
 };
+
+std::map<std::string, IS_Location>::iterator Config::getBestLocation(std::string &path) {
+    std::map<std::string, IS_Location>::iterator comp = location.end();
+    size_t maxLen = 0;
+
+    for (std::map<std::string, IS_Location>::iterator it = location.begin(); it != location.end(); ++it) {
+        const std::string& locationPath = it->first;
+
+        if (path.compare(0, locationPath.size(), locationPath) == 0) {
+            if (path.size() == locationPath.size() || path[locationPath.size()] == '/') {
+                if (locationPath.size() > maxLen) {
+                    comp = it;
+                    maxLen = locationPath.size();
+                    std::cout << "Best location so far: " << locationPath << std::endl;
+                }
+            }
+        }
+    }
+    return (comp);
+}
 
 std::map<std::string, IS_Location>::iterator  Config::locationEnd() {
 	return location.end();

@@ -6,10 +6,10 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 01:56:13 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 03:37:20 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/08 06:39:49 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:00:12 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #pragma once
 #include <iostream>
@@ -60,7 +60,8 @@ class Request {
 		bool parseBody();
 		void sendError(int code, std::string msg);
 		std::string pathManager(const std::string& root, const std::string& path);
-		void execute();
+		std::string directoryListPath(std::string& root, std::string& path);
+		void execute(IS_Client &client);
 		std::string getContentType();
 		bool getChunk();
 		std::string getMethod();

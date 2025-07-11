@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:36 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/09 22:36:49 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:03:05 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@ class HTTPResponse {
 		HTTPResponse(int res, std::string msg, Config &conf);
 		~HTTPResponse();
 		std::string buildResponse();
-		std::string buildFile(std::string path);
-		std::string buildDirectoryList(std::string path);
-		std::string buildDirectoryListHtml(std::string path);
+		std::string buildDirectoryList(std::string route, std::string path, std::string root, IS_Client &client);
+		std::string buildDirectoryListHtml(std::string route, std::string path, std::string root, IS_Client &client);
 		std::string buildGet(std::string filename);
 		std::string buildPost();
 		std::string redirect(int redirectCode, std::string url);

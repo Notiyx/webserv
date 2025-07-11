@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/10 19:24:18 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 14:20:22 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -427,10 +427,21 @@ bool Request::getChunk() {
 	return(this->isChunked);
 };
 
-void Request::execute() {
+std::string Request::directoryListPath(std::string& root, std::string& path) {
+	std::cout << "ROOT: " << root <<" DIRECTORY PATH " << path << std::endl;
+	return (root + path);
+};
+
+void Request::execute(IS_Client &client) {
 	HTTPResponse valid;
 	std::string res;
-	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(path);
+	std::string pathCopy = path;
+	std::cout << "Path RECU " << path << std::endl;
+	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(pathCopy);
+	std::map<std::string, IS_Location>::iterator  itD = conf.getDirectoryLocation(pathCopy);
+	it = it != this->conf.locationEnd() ? it : itD;
+	if (it == this->conf.locationEnd())
+		return ;
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
 	if (root.empty())
@@ -439,7 +450,13 @@ void Request::execute() {
 		index = conf.getDefaultIndex();
 	if (method == DELETE)
 		root += "/uploads";
-	std::string fullpath = pathManager(root, path);
+	std::string fullpath;
+	if (!it->second.getDirectoryListing())
+		fullpath = pathManager(root, pathCopy);
+	else		
+		fullpath = directoryListPath(root, pathCopy);
+	std::cout << "itfirst:" << it->first << std::endl;
+	std::cout << "fullpath: " << fullpath << std::endl;
 	int redirectCode = it->second.getCodeRedirect();
 	if (redirectCode != -1)
 	{
@@ -462,22 +479,34 @@ void Request::execute() {
 			res = valid.buildCGI(body);
 		} catch (std::runtime_error& e) { sendError(500, e.what()); return ;}
 	}
-		if (method == GET)
+	if (method == GET)
 	{
-		std::cout << "GET" << std::endl;
-
-		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath.substr(1)) && !this->isCGI)
+		//<< utils::getDateCurrent() << "GET" << std::endl;
+		fullpath = utils::removeIsSpaceBetween(fullpath.c_str());
+		std::cout << utils::isDirectory(fullpath) << std::endl;
+		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath) && !this->isCGI)
 		{
+			std::cout << "DIRECTORYLIST" << std::endl;
 			try {
-				res = valid.buildDirectoryList(fullpath);
+				res = valid.buildDirectoryList(it->first, fullpath, root, client);
 			}
-			catch (const std::runtime_error& e) { sendError(500, "Internal Server Error"); }
-		} else if (utils::isFile(fullpath.substr(1)) && !this->isCGI)
+			catch (const std::runtime_error& e) { std::cout << e.what() << std::endl; sendError(500, "Internal Server Error"); }
+		} else if (it->second.getDirectoryListing() && !this->isCGI)
+		{
+			std::string lastPath = client.getDir();
+			int end = fullpath.find("/");
+			fullpath = fullpath.substr(end);
+			fullpath = lastPath + fullpath;
+			if (utils::isFile(fullpath.substr(1)) && !this->isCGI)
 			res = valid.buildGet(fullpath);
+		}
 		else if (!this->isCGI)
 		{
 			fullpath += index;
 			res = valid.buildGet(fullpath);
+		} else
+		{
+			res = valid.buildGet(fullpath);	
 		}
 	} else if (method == POST) 
 	{

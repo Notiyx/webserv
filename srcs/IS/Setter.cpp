@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Setter.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 19:39:45 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/09 19:51:52 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 14:04:05 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include <InstanceInterface.hpp>
 
@@ -123,4 +123,8 @@ void IS_Client::appendBuffer(const char *data, size_t size) {
 
 void IS_Client::setComplete(bool complete) {
     this->complete = complete;
+};
+
+void IS_Client::setDir(std::string lastDir) {
+    this->lastDirectoryList = lastDir;
 };
