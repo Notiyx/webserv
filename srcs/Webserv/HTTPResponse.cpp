@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 23:41:48 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 14:12:50 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:38:00 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ std::string HTTPResponse::redirect(int redirectCode, std::string url){
 
 std::string HTTPResponse::buildDirectoryListHtml(std::string route, std::string path, std::string root, IS_Client &client) {
 	DirectoryListing directoryList;
+	std::string lastPath;
 	try {
-		std::cout << "setList:" << path << std::endl;
+		client.setOldDir(route);
 		client.setDir(path);
 		directoryList.setListing(path + "/");
 	}
@@ -97,7 +98,10 @@ std::string HTTPResponse::buildDirectoryListHtml(std::string route, std::string 
 	for(; it != list.end(); ++it)
 	{
 		templates << "<div class=\"directory-row\">";
-		templates << "<div class=\"directory-name\"><a href=\"" << route + "/" + it->second.getFolderName() << "\">"<< it->second.getFolderName() << "</a></div>";
+		if (it == list.begin())
+			templates << "<div class=\"directory-name\"><a href=\"" << client.getOldDir() + "/" << "\">"<< it->second.getFolderName()<< "</a></div>";
+		else
+			templates << "<div class=\"directory-name\"><a href=\"" << route + "/" + it->second.getFolderName() << "\">"<< it->second.getFolderName()<< "</a></div>";
 		if (it != list.begin())
 		{
 			templates << "<div class=\"directory-size\">" << it->second.getFolderSize() << " " << it->second.getFolderSuffix() << "</div>";
@@ -116,7 +120,7 @@ std::string HTTPResponse::buildDirectoryList(std::string route, std::string path
 		std::ostringstream response;
 		response << "HTTP/1.1 200 Created\r\n";
 		response << "Content-Length: " << htmlBody.size() << "\r\n";
-		response << "Connection: close\r\n\r\n";
+		response << "connection: keep-alive\r\n\r\n";
 		response << htmlBody;
 		return (response.str());
 	} catch (const DirectoryListError& e)
@@ -130,8 +134,8 @@ std::string HTTPResponse::buildResponse() {
 	if (conf.getSpecificErrorPage(res).size() > 0) {
 		std::ifstream file(conf.getSpecificErrorPage(res).c_str());
 		iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
-		iss << "content-Type: text/html\r\n";
-		iss << "connection: close\r\n";
+		iss << "Content-Type: text/html\r\n";
+		iss << "Connection: close\r\n";
 		iss << "\r\n";
 		if (!file.is_open())
 		{
@@ -146,8 +150,8 @@ std::string HTTPResponse::buildResponse() {
 		return (iss.str());
 	} else {
 		iss << "HTTP/1.1 " << res << " " << msg << "\r\n";
-		iss << "content-Type: text/html\r\n";
-		iss << "connection: close\r\n";
+		iss << "Content-Type: text/html\r\n";
+		iss << "Connection: close\r\n";
 		iss << "\r\n";
 		iss << "<html><body><h1>" << res << " " << msg << "</h1></body></html>";	
 	}
@@ -159,7 +163,7 @@ std::string HTTPResponse::buildPost() {
 		oss << "HTTP/1.1 303 See other\r\n";
 		oss << "Location: /\r\n";
 		oss << "Content-Length: 0\r\n";
-		oss << "Connection: close\r\n\r\n";
+		oss << "Connection: keep-alive\r\n\r\n";
 		return oss.str();
 };
 
@@ -168,7 +172,7 @@ std::string HTTPResponse::buildCGI(std::string bodyCGI) {
 	oss << "HTTP/1.1 200 OK\r\n";
 	oss << "Content-Type: text/html\r\n";
 	oss << "Content-Length: " << bodyCGI.size() << "\r\n";
-	oss << "Connection: close\r\n\r\n";
+	oss << "Connection: keep-alive\r\n\r\n";
 	oss << bodyCGI;
 	return oss.str();
 };
@@ -193,7 +197,7 @@ std::string HTTPResponse::buildGet(std::string filename) {
 	size_t length = file.tellg();
 	file.seekg(0, std::ios::beg);
 	oss << "Content-Length: " << length << "\r\n";
-	oss << "Connection: close\r\n\r\n";
+	oss << "connection: keep-alive\r\n\r\n";
 	oss << file.rdbuf();
 	file.close();
 	return oss.str();

@@ -8,7 +8,8 @@ form = cgi.FieldStorage()
 fileitem = form['file']
 
 if fileitem.filename:
+    os.makedirs("front/uploads/", exist_ok=True)
     filename = os.path.basename(fileitem.filename)
     filepath = os.path.join("front/uploads/", filename)
     with open(filepath, 'wb') as f:
-        f.write(fileitem.file.())
+        f.write(fileitem.file.read())

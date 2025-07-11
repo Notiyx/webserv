@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 17:34:23 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 13:07:41 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 15:38:36 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void    DirectoryListing::setListing(const std::string &path) {
     struct dirent *entry;
     while((entry = readdir(dir)) != NULL) {
         std::string dName(entry->d_name);
-        std::cout << "file: " << dName << std::endl;
         if (dName == ".")
             continue ;
         std::string filePath = path + entry->d_name;

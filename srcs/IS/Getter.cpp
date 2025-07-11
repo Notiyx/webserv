@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 08:34:35 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 14:05:29 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 18:54:13 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,5 +135,13 @@ bool IS_Client::getComplete() {
 }
 
 std::string IS_Client::getDir() {
+    return(this->currentDirectoryList);
+};
+
+std::string IS_Client::getOldDir() {
     return(this->lastDirectoryList);
 };
+
+std::string IS_Client::getCurrentDirectoryName() {
+    return (this->currentDirectoryName);
+}

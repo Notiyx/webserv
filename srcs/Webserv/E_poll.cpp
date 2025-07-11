@@ -6,8 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 13:59:40 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/10 19:23:05 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:42:54 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,21 +124,38 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 		return (false);
 	}
 	std::string savePath = path;
+	if (method == "DELETE")
+	{
+		std::map<std::string, IS_Location>::iterator  location = conf.getLocationDelete(savePath);
+		if (location == conf.locationEnd())
+		{
+			sendError(client_fd, 404, "Not Found");
+			return (false);
+		}
+		if (!location->second.getLocationDeleteMethod())
+		{
+			sendError(client_fd, 405, "Method Not Allowed");
+			return (false);
+		}
+		return (true);
+	}
 	std::map<std::string, IS_Location>::iterator locationDirectory = conf.getDirectoryLocation(savePath);
 	std::map<std::string, IS_Location>::iterator  location = conf.getBestLocation(savePath);
-	location = location != this->conf.locationEnd() ? location : locationDirectory;
-	if (location == conf.locationEnd())
+	if (location == conf.locationEnd() && locationDirectory == conf.locationEnd())
 	{
-		std::cout << "test" << std::endl;
 		sendError(client_fd, 404, "Not Found");
 		return (false);
 	}
-	std::cout << "Get: " << location->second.getLocationGetMethod() << std::endl;
-	std::cout << "Post: " << location->second.getLocationPostMethod() << std::endl;
-	std::cout << "location: " << location->first << std::endl;
-	if ((method == "GET" && !location->second.getLocationGetMethod()) ||
+	if (location != conf.locationEnd() && ((method == "GET" && !location->second.getLocationGetMethod()) ||
 		(method == "POST" && !location->second.getLocationPostMethod()) ||
-		(method == "DELETE" && !location->second.getLocationDeleteMethod()))
+		(method == "DELETE" && !location->second.getLocationDeleteMethod())))
+	{
+		sendError(client_fd, 405, "Method Not Allowed");
+		return (false);
+	}
+	if ((locationDirectory != conf.locationEnd() && ((method == "GET" && !locationDirectory->second.getLocationGetMethod()) ||
+		(method == "POST" && !locationDirectory->second.getLocationPostMethod()) ||
+		(method == "DELETE" && !locationDirectory->second.getLocationDeleteMethod()))))
 	{
 		sendError(client_fd, 405, "Method Not Allowed");
 		return (false);
@@ -149,7 +165,8 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 
 bool E_poll::launchRequest(int client_fd, IS_Client &client) {
 	Request req(client, conf, client_fd);
-	req.parseHeader();
+	if (!req.parseHeader())
+		return (false);
 	if (req.getMethod() == "POST" && !req.getChunk())
 	{
 		if(!req.parseBody())
@@ -188,26 +205,24 @@ void E_poll::epollExec(int serv_fd) {
 				IS_Client &client = client_map[fd];
 				if (!readClient(fd, client))
 				{
-					client_map.erase(fd);
-					close(fd);
+					client.setEraseData();
 					continue ;
 				}
 				if (client.getComplete())
 				{
 					if(isValidRequest(fd, client))
-					{
 						launchRequest(fd, client);
-					}
-					client_map.erase(fd);
+					client.setEraseData();
 					close(fd);
 				}
 				else
 					continue ;
 			} catch (const std::runtime_error& e) {
 				std::cerr << e.what() << std::endl;
-				client_map.erase(fd);
+				IS_Client &client = client_map[fd];
+				client.setEraseData();
 				close(fd);
-				continue ;
+				return ;
 			}
 		}
 		else if (events[i].events & EPOLLOUT)

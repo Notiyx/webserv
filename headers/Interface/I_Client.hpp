@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 21:46:50 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 13:57:24 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 18:52:59 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@
 class I_Client {
 	protected:
 		std::string buffer;
-		std::string lastDirectoryList;
+		std::string currentDirectoryList;
+		std::string	lastDirectoryList;
+		std::string	currentDirectoryName;
 		bool 		isHeader;
 		bool 		isChunked;
 		bool 		complete;

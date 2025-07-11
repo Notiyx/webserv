@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:46:38 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 13:34:08 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:31:43 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ std::string     Config::getDefaultRoot(){
     return (this->default_root);
 };
 
-std::size_t    Config::getMaxClients(){
+std::size_t    Config::getMaxBodySize(){
     return (this->clientMaxRequest);
 };
 
@@ -140,7 +140,7 @@ std::map<std::string, IS_Location>::iterator     Config::getLocation(std::string
     return (this->location.find(key));
 }
 
-std::map<std::string, IS_Location>::iterator Config::getDirectoryLocation(std::string& path) {
+std::map<std::string, IS_Location>::iterator Config::getLocationDelete(std::string& path) {
     std::map<std::string, IS_Location>::iterator comp = location.end();
     size_t len = 0;
     for(std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
@@ -161,10 +161,33 @@ std::map<std::string, IS_Location>::iterator Config::getDirectoryLocation(std::s
     return (comp);
 };
 
+
+std::map<std::string, IS_Location>::iterator Config::getDirectoryLocation(std::string& path) {
+    std::map<std::string, IS_Location>::iterator comp = location.end();
+    size_t len = 0;
+    for(std::map<std::string, IS_Location>::iterator  it = location.begin(); it != location.end(); ++it)
+    {
+        const std::string locpath = it->first;
+        if (path.compare(0, locpath.size(), locpath) == 0 && (path.size() == locpath.size() || path[locpath.size()] == '/' || locpath == "/") && it->second.getDirectoryListing()) {
+            if (locpath.size() > len) {
+                comp = it;
+                len = locpath.size();
+            }
+        }
+    }
+    if (comp != location.end()) {
+        path = path.substr(comp->first.size());
+        if (path.empty())
+            path = "/";
+    }
+    return (comp);
+};
+
 std::map<std::string, IS_Location>::iterator Config::getBestLocation(std::string &path) {
     std::map<std::string, IS_Location>::iterator comp = location.end();
     size_t maxLen = 0;
-
+    if (path[path.size() - 1] == '?' && path.find("/CGI/") != std::string::npos)
+        path = path.substr(0, path.size() - 1);
     for (std::map<std::string, IS_Location>::iterator it = location.begin(); it != location.end(); ++it) {
         const std::string& locationPath = it->first;
 
@@ -173,7 +196,6 @@ std::map<std::string, IS_Location>::iterator Config::getBestLocation(std::string
                 if (locationPath.size() > maxLen) {
                     comp = it;
                     maxLen = locationPath.size();
-                    std::cout << "Best location so far: " << locationPath << std::endl;
                 }
             }
         }

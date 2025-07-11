@@ -6,8 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 14:20:22 by nmetais          ###   ########.fr       */
-/*   Updated: 2025/07/10 19:24:18 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 21:48:20 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,14 +205,14 @@ bool Request::parseBody() {
 };
 
 
-void Request::parseHeader() {
+bool Request::parseHeader() {
 	bool ishost = false;
 	for(std::map<std::string, std::string>::iterator it = this->header.begin(); it != this->header.end(); ++it)
 	{
 		if ((this->method == GET || this->method == DELETE) && !body.empty())
 		{
 			sendError(400, "Bad Request");
-			return ;
+			return (false);
 		}
 		if (it->first == "Host")
 		{
@@ -221,21 +220,21 @@ void Request::parseHeader() {
 			if (it->second != conf.getHostAndPort())
 			{
 				sendError(400, "Bad Request");
-				return ;
+				return (false);
 			}
 		}
 		if (this->method == POST && it->first == "Content-Length")
 		{
 			size_t size = std::atoi(it->second.c_str());
-			if (size > static_cast<size_t>(50000000) || size > static_cast<size_t>(std::numeric_limits<int>::max()))
+			if (size > conf.getMaxBodySize() || size > static_cast<size_t>(std::numeric_limits<int>::max()))
 			{
-				sendError(413, "Payload Too Large");
-				return ;
+				sendError(413, "Content Too Large");
+				return (false);
 			}
 			if (body.length() != size)
 			{
 				sendError(400, "Bad Request");
-				return ;
+				return (false);
 			}
 		}
 		if (this->method == POST && it->first == "Content-Type")
@@ -248,15 +247,16 @@ void Request::parseHeader() {
 					sendError(415, "Uploads are disabled on this location");
 				else
 					sendError(400, "Bad Request");
-				return ;
+				return (false);
 			}
 		}
 
 	}
 	if (!ishost) {
 		sendError(400, "Bad Request");
-		return ;
+		return (false);
 	}
+	return (true);
 };
 
 std::string Request::getContentType() {
@@ -320,7 +320,6 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		if (!file.is_open())
 		{
 			sendError(500, "Internal Server Error");
-			close(client_fd);
 			return (false);
 		}
 		file.write(&part.content[0], part.content.size());
@@ -338,7 +337,6 @@ bool Request::executeUpload(data part, std::string uploadPath) {
 		std::ofstream file(fullpath.c_str(), std::ios::out | std::ios::app);
 		if (!file.is_open()) {
 			sendError(500, "Internal Server Error");
-			close(client_fd);
 			return (false);
 		}
 		file.write(&part.content[0], part.content.size());
@@ -380,7 +378,6 @@ bool Request::executePost(std::string filename) {
 	std::ofstream file(filename.c_str(), std::ios::out | std::ios::app);
 	if (!file.is_open()) {
 		sendError(500, "Internal Server Error");
-		close(client_fd);
 		return (false);
 	}
 	std::istringstream iss(body);
@@ -409,17 +406,17 @@ std::string Request::deleteFiles(std::string filename) {
 	filename.find('\\') != std::string::npos) 
 	{
 		sendError(400, "Bad Request: Invalid filename");
-		return (NULL);
+		return ("");
 	}
 	if (access(filename.c_str(), F_OK) != 0) 
 	{
 		sendError(404, "File Not Found");
-		return (NULL);
+		return ("");
 	}
 	if (remove(filename.c_str()) != 0) 
 	{
 		sendError(500, "Could Not Delete File");
-		return (NULL);
+		return ("");
 	}
 	return("HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n");
 };
@@ -429,7 +426,6 @@ bool Request::getChunk() {
 };
 
 std::string Request::directoryListPath(std::string& root, std::string& path) {
-	std::cout << "ROOT: " << root <<" DIRECTORY PATH " << path << std::endl;
 	return (root + path);
 };
 
@@ -437,12 +433,18 @@ void Request::execute(IS_Client &client) {
 	HTTPResponse valid;
 	std::string res;
 	std::string pathCopy = path;
-	std::cout << "Path RECU " << path << std::endl;
-	std::map<std::string, IS_Location>::iterator  it = conf.getBestLocation(pathCopy);
+	std::map<std::string, IS_Location>::iterator  it;
+	if (method == DELETE)
+		it = conf.getLocationDelete(pathCopy);
+	else
+		it = conf.getBestLocation(pathCopy);
 	std::map<std::string, IS_Location>::iterator  itD = conf.getDirectoryLocation(pathCopy);
 	it = it != this->conf.locationEnd() ? it : itD;
 	if (it == this->conf.locationEnd())
+	{
+		sendError(404, "Not Found");
 		return ;
+	}
 	std::string root = it->second.getRoot();
 	std::string index = it->second.getIndex();
 	if (root.empty())
@@ -456,8 +458,6 @@ void Request::execute(IS_Client &client) {
 		fullpath = pathManager(root, pathCopy);
 	else		
 		fullpath = directoryListPath(root, pathCopy);
-	std::cout << "itfirst:" << it->first << std::endl;
-	std::cout << "fullpath: " << fullpath << std::endl;
 	int redirectCode = it->second.getCodeRedirect();
 	if (redirectCode != -1)
 	{
@@ -467,7 +467,6 @@ void Request::execute(IS_Client &client) {
 			sendError(400, "Bad Request");
 			return ;
 		}
-		std::cout << "REDIRECT" << std::endl;
 		res = valid.redirect(redirectCode, url);
 		utils::sender(client_fd, res);
 		return ;
@@ -480,26 +479,37 @@ void Request::execute(IS_Client &client) {
 			res = valid.buildCGI(body);
 		} catch (std::runtime_error& e) { sendError(500, e.what()); return ;}
 	}
-	if (method == GET)
+	else if (method == GET)
 	{
-		//<< utils::getDateCurrent() << "GET" << std::endl;
-		fullpath = utils::removeIsSpaceBetween(fullpath.c_str());
-		std::cout << utils::isDirectory(fullpath) << std::endl;
+		std::cout << utils::getDateCurrent() << " - Get detected" << std::endl;
+		std::string dir = client.getDir();
+		if (it->second.getDirectoryListing() && (dir.empty() || dir != "/"))
+		{
+			fullpath = utils::removeIsSpaceBetween(fullpath.c_str());
+			if (root.find("/") == std::string::npos)
+				root += "/";
+			if (fullpath.find(it->second.getRoot()) != std::string::npos && fullpath != root)
+			{
+				fullpath = fullpath.substr(root.size());
+				client.setCurrentDirectoryName(fullpath);
+				fullpath = client.getDir() + "/" + fullpath;
+			}
+		}
 		if (it->second.getDirectoryListing() && utils::isDirectory(fullpath) && !this->isCGI)
 		{
-			std::cout << "DIRECTORYLIST" << std::endl;
 			try {
 				res = valid.buildDirectoryList(it->first, fullpath, root, client);
 			}
-			catch (const std::runtime_error& e) { std::cout << e.what() << std::endl; sendError(500, "Internal Server Error"); }
+			catch (const std::runtime_error& e) { std::cerr << e.what() << std::endl; sendError(500, "Internal Server Error"); }
 		} else if (it->second.getDirectoryListing() && !this->isCGI)
 		{
-			std::string lastPath = client.getDir();
-			int end = fullpath.find("/");
-			fullpath = fullpath.substr(end);
-			fullpath = lastPath + fullpath;
-			if (utils::isFile(fullpath.substr(1)) && !this->isCGI)
-			res = valid.buildGet(fullpath);
+			if (!utils::isFile(fullpath) && !this->isCGI)
+			{
+				if (utils::isFile(fullpath))
+				res = valid.buildGet(fullpath);
+			}
+			else 
+				res = valid.buildGet(fullpath);
 		}
 		else if (!this->isCGI)
 		{
@@ -511,6 +521,7 @@ void Request::execute(IS_Client &client) {
 		}
 	} else if (method == POST) 
 	{
+		std::cout << utils::getDateCurrent() << " - Post detected" << std::endl;
 		if (getContentType() == "application/x-www-form-urlencoded")
 		{
 			res = valid.buildPost();
@@ -528,11 +539,13 @@ void Request::execute(IS_Client &client) {
 			res = valid.buildPost();
 		}
 	} else if (method == DELETE) {
+		std::cout << utils::getDateCurrent() << " - Delete detected" << std::endl;
 		res = deleteFiles(fullpath);
+		if (res.empty())
+			return ;
 	}else {
 		sendError(405, "Method Not Allowed");
 		return ;
 	}
 	utils::sender(client_fd, res);
-	close(client_fd);
 };

@@ -53,7 +53,8 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "complex": "cpp",
-        "csignal": "cpp"
+        "csignal": "cpp",
+        "test": "cpp"
     },
     "livePreview.defaultPreviewPath": "/front/404.html"
 }

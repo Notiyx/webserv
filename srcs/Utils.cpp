@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 06:40:37 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 19:39:37 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 19:17:41 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void utils::sender(int client_fd, std::string res) {
 			ssize_t sent = send(client_fd, (res.c_str() + total_sent), to_send - total_sent, 0);
 			if (sent == -1)
 			{
-				if (errno == EINTR) continue ;
+				if (errno == EINTR) return ;
 				if (errno == EAGAIN || errno == EWOULDBLOCK)
 					break ;
 				utils::check_syscall(sent, "send");
