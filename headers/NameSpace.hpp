@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   NameSpace.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:19:18 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/09 19:42:28 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 22:17:26 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,5 @@ namespace parsingFunction
     std::size_t findMaxClientRequest(std::istream &infile);
     std::map<std::string, IS_Location> findLocation(std::istream &infile);
     std::map<std::string, IS_ErrorPage> findErrorPage(std::istream &infile);
+    bool                                isValidIP(const std::string& ip);
 } // namespace parsingFunction

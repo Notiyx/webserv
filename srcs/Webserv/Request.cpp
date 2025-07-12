@@ -6,7 +6,7 @@
 /*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:03:30 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 22:12:49 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 22:45:33 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -432,6 +432,8 @@ std::string Request::directoryListPath(std::string& root, std::string& path) {
 void Request::execute(IS_Client &client) {
 	HTTPResponse valid;
 	std::string res;
+	if (path[path.size() - 1] == '?')
+		path = path.substr(0, path.size() - 1);
 	std::string pathCopy = path;
 	std::map<std::string, IS_Location>::iterator  it;
 	if (method == DELETE)
@@ -462,6 +464,7 @@ void Request::execute(IS_Client &client) {
 	if (redirectCode != -1)
 	{
 		std::string url = it->second.getPathRedirect();
+
 		if (url.size() == 0)
 		{
 			sendError(400, "Bad Request");

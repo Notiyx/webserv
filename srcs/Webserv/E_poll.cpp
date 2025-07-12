@@ -6,7 +6,7 @@
 /*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 16:28:19 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/11 21:42:54 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/11 22:41:16 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,8 @@ bool E_poll::isValidRequest(int client_fd, IS_Client &client) {
 		sendError(client_fd, 402, "Bad Request");
 		return (false);
 	}
+	if (path[path.size() - 1] == '?')
+		path = path.substr(0, path.size() - 1);
 	std::string savePath = path;
 	if (method == "DELETE")
 	{

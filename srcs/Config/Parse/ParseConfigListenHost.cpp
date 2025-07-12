@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfigListenHost.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 07:28:13 by tlonghin          #+#    #+#             */
-/*   Updated: 2025/07/11 22:12:34 by tlonghin         ###   ########.fr       */
+/*   Updated: 2025/07/11 22:18:11 by nmetais          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,24 @@
 #include <NameSpace.hpp>
 #include <cstdlib>
 
-static bool isValidIP(const std::string& ip) {
+bool parsingFunction::isValidIP(const std::string& ip) {
     std::istringstream iss(ip);
     std::string token;
     int count = 0;
     while (std::getline(iss, token, '.')) {
         if (++count > 4)
-            return false;
+            return (false);
         if (token.empty() || token.size() > 3)
-            return false;
+            return (false);
         for (size_t i = 0; i < token.size(); ++i) {
             if (!std::isdigit(token[i]))
-                return false;
+                return (false);
         }
         int value = std::atoi(token.c_str());
         if (value < 0 || value > 255)
-            return false;
+            return (false);
     }
-    return count == 4;
+    return (count == 4);
 }
 
 IS_Listen   parsingFunction::findListen(std::istream &infile) {
