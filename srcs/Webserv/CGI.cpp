@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nmetais <nmetais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tlonghin <tlonghin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:10:18 by nmetais           #+#    #+#             */
-/*   Updated: 2025/07/08 08:36:44 by nmetais          ###   ########.fr       */
+/*   Updated: 2025/07/12 19:19:31 by tlonghin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ void CGI::childCGI(int fd[2]) {
 			std::exit(1);
 		close(pipe_post[0]);
 		close(pipe_post[1]);
-		wait(NULL);
 	}
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
 		std::exit(1);
